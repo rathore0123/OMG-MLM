@@ -1,0 +1,107 @@
+// Add to your Register.scss file
+
+.lp-position-group {
+  display: flex;
+  gap: 2rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  margin-top: 0.25rem;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.lp-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1a1f36;
+  user-select: none;
+}
+
+.lp-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.lp-radio-custom {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: white;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.lp-radio:checked + .lp-radio-custom {
+  border-color: #6366f1;
+  background: #6366f1;
+}
+
+.lp-radio:checked + .lp-radio-custom::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: white;
+}
+
+.lp-radio-label:hover .lp-radio-custom {
+  border-color: #6366f1;
+  transform: scale(1.05);
+}
+
+.lp-position-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 8px;
+
+  .lp-pos-card {
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    input[type="radio"] {
+      margin-right: 10px;
+      accent-color: #4f46e5; // Your primary brand color
+    }
+
+    &.active {
+      border-color: #4f46e5;
+      background-color: rgba(79, 70, 229, 0.05);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .lp-pos-title {
+      display: block;
+      font-weight: 300;
+      font-size: 0.9rem;
+      color: #b4b6b9;
+    }
+
+    .lp-pos-desc {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  }
+}

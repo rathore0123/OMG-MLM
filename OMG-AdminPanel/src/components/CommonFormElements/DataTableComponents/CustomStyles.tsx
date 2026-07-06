@@ -1,0 +1,48 @@
+const customStyles = {
+  table: {
+    style: {
+      backgroundColor: "transparent",
+    },
+  },
+
+  headRow: {
+    style: {
+      backgroundColor: "var(--color-primary-table-bg)",
+      borderBottom: "1px solid var(--table-border)",
+      minHeight: "45px",
+      whiteSpace: "normal !important" ,
+    },
+  },
+
+  headCells: {
+    style: {
+      color: "var(--color-primary-table-text)",
+      fontWeight: 600,
+      fontSize: "13px",
+      whiteSpace: "normal !important" ,
+    },
+  },
+
+  rows: {
+    style: {
+      backgroundColor: "var(--table-row-bg)",
+      color: "var(--table-row-text)",
+      borderBottom: "1px solid var(--table-border)",
+      minHeight: "48px",
+    },
+    highlightOnHoverStyle: {
+      backgroundColor: "var(--table-row-hover)",
+      transition: "all 0.2s ease",
+    },
+  },
+
+  pagination: {
+    style: {
+      backgroundColor: "var(--table-pagination-bg)",
+      color: "var(--table-row-text)",
+      borderTop: "1px solid var(--table-border)",
+    },
+  },
+};
+
+export default customStyles;

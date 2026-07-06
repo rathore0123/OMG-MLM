@@ -1,0 +1,198 @@
+.ra-page {
+  padding-bottom: 32px;
+}
+
+/* ── Search bar ── */
+.ra-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border-color);
+  border-radius: 14px;
+  padding: 0 16px;
+  margin-bottom: 20px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+.ra-search-icon {
+  color: var(--light-font);
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.ra-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--card-text-color);
+  padding: 14px 0;
+
+  &::placeholder { color: var(--light-font); }
+}
+
+.ra-search-clear {
+  background: none;
+  border: none;
+  color: var(--light-font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-left: 8px;
+  flex-shrink: 0;
+
+  &:hover { color: var(--card-text-color); }
+}
+
+/* ── Category card ── */
+.ra-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 16px;
+  padding: 20px 22px 22px;
+  margin-bottom: 18px;
+
+  @media (max-width: 576px) { padding: 16px; }
+}
+
+.ra-category-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--light-font);
+  margin-bottom: 18px;
+}
+
+/* ── Service grid ──
+   Desktop : 6 per row
+   Tablet  : 4 per row
+   Mobile  : 4 per row (GPay style)
+── */
+.ra-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+
+  @media (max-width: 1199px) { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 767px)  { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 400px)  { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+}
+
+/* ── Service tile ── */
+.ra-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 6px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+    border-color: transparent;
+
+    .ra-icon-wrap { transform: scale(1.08) rotate(-3deg); }
+  }
+
+  &:active { transform: translateY(-1px) scale(0.97); }
+}
+
+/* ── Icon bubble ── */
+.ra-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  transition: transform 0.25s ease;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+
+  @media (max-width: 576px) {
+    width: 46px;
+    height: 46px;
+    font-size: 21px;
+    border-radius: 13px;
+  }
+}
+
+/* ── Label ── */
+.ra-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--card-text-color);
+  text-align: center;
+  line-height: 1.35;
+  word-break: break-word;
+
+  @media (max-width: 576px) { font-size: 10px; }
+}
+
+/* ── "Soon" badge ── */
+.ra-soon-badge {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+  pointer-events: none;
+}
+
+/* ── No result ── */
+.ra-no-result {
+  font-size: 13px;
+  color: var(--light-font);
+  margin: 0;
+  padding: 12px 0 4px;
+}
+
+/* ── Toast ── */
+.ra-toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #f1f5f9;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 9999;
+  animation: ra-pop 0.22s ease;
+}
+
+@keyframes ra-pop {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);    }
+}

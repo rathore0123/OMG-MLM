@@ -1,0 +1,72 @@
+/* ─── EarningsChart component styles ─── */
+// @import "../Dashboard.scss";
+
+.earnings-chart-card {
+  height: 100%;
+}
+
+.chart-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.earnings-dot    { background: #7c5cfc; }
+.withdrawals-dot { background: #22c55e; }
+
+.legend-text {
+  font-size: 11px;
+  color: var(--dash-text-2);
+  margin-right: 10px;
+}
+
+.chart-area-wrap {
+  width: 100%;
+}
+
+/* Filter dropdown */
+.filter-select-wrap {}
+
+.filter-select {
+  background: var(--dash-card-2);
+  border: 1px solid var(--dash-border);
+  color: var(--dash-text-1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  appearance: auto;
+
+  &:focus { outline: none; border-color: var(--dash-primary); }
+
+  option {
+    background: var(--dash-card-2);
+    color: var(--dash-text-1);
+  }
+}
+
+/* Tooltip */
+.chart-tooltip {
+  background: var(--dash-card-2);
+  border: 1px solid var(--dash-border-bright);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--dash-text-1);
+  box-shadow: var(--dash-shadow);
+
+  &__label {
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--dash-text-2);
+    font-size: 11px;
+  }
+}

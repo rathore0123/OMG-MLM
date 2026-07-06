@@ -1,0 +1,86 @@
+
+
+.account-overview-card {
+}
+
+/* Tab buttons */
+.ao-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--dash-card-2);
+  border-radius: 6px;
+  padding: 3px;
+}
+
+.ao-tab {
+  background: var(--btn-bg) !important;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 4px !important;
+  font-size: 8px !important;
+  font-weight: 500;
+  color: var(--btn-text-color) !important;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+
+  &.active {
+    background: var(--btn-hover-color);
+    color: var(--btn-text-color) !important;
+  }
+
+  &:not(.active):hover {
+    color: var(--btn-text-color) !important;
+    background: var(--btn-hover-color);
+  }
+}
+
+/* Income rows */
+.ao-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow-y: auto;
+  gap: 2px;
+}
+
+/* Scrollbar hide */
+.ao-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox ke liye */
+.ao-list {
+  scrollbar-width: none;
+}
+
+.ao-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--dash-border);
+  gap: 8px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    font-size: 11px;
+    color: var(--dash-text-2);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__value {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dash-text-1);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

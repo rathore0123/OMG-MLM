@@ -1,0 +1,11 @@
+// ── Page-level wrapper ─────────────────────────────────
+.bt-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+
+  // Full-width canvas inside page-body
+  .page-body & {
+    margin: 0;
+    padding: 0;
+  }
+}

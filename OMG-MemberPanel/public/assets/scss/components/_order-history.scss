@@ -1,0 +1,358 @@
+/**=====================
+    73. Order History CSS start
+==========================**/
+
+  .prooduct-details-box {
+    margin-bottom: 30px;
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      height: 16px;
+      cursor: pointer;
+    }
+  .d-flex {
+    border: 1px solid $light-background;
+    border-radius: 10px;
+    padding: 15px 0 15px 10px;
+    width: 100%;
+    position: relative;
+    [data-theme="dark"] & {
+      border-color: var(--solid-border);
+       }
+  }
+  .btn {
+    line-height: 13px;
+  }
+    .d-block {
+      border: 1px solid $light-gray;
+      width: 100%;
+      position: relative;
+      [data-theme="dark"] & {
+        border-color: var(--solid-border);
+        }
+      .flex-grow-1 {
+        padding: 15px;
+      }
+    }
+    .rating {
+      color: $warning-color;
+      letter-spacing: 3px;
+      gap: unset;
+      i{
+        font-size: 16px;
+      }
+    }
+    .price {
+      margin-top: 3px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      span {
+        margin-left: 5px;
+        color: var(--light-font);
+      }
+    }
+    ul.rating {
+      li {
+        display: inline-block;
+      }
+    }
+    .product-name {
+      a {
+        color: var(--gray-60);
+      }
+      h6 {
+        color: $theme-body-font-color;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        [data-theme="dark"] & {
+          color: var(--body-font-color);
+          }
+      }
+    }
+    .btn {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+      font-size: 9px;
+      padding: 2px 5px;
+    }
+  }
+  .order-history {
+    &.wishlist{
+      table {
+        thead {
+          tr {
+            th {
+              vertical-align: middle;
+              border-top: none;
+              background-color: rgba($primary-color, 0.05) !important;
+              border: 1px solid $light-gray;
+              padding: 15px;
+              font-size: 16px;
+              color: var(--theme-default);
+              font-weight: 600;
+              [data-theme="dark"] & {
+                border-color: var(--solid-border);
+                 }
+            }
+          }
+        }
+        .qty-box {
+          width: 120px;
+          margin: 0 auto;
+          border-radius: 5px;
+          overflow: hidden;
+          input {
+            padding: 0;
+            border: none;
+            background-color: transparent;
+            &:focus {
+              box-shadow: none;
+              border: none;
+            }
+          }
+          .input-group {
+            justify-content: space-between;
+            align-items: center;
+            background-color: transparent;
+            border-radius: 5px;
+            border: 1px solid $light-gray;
+            overflow: hidden;
+          }
+          .btn {
+            background-color: transparent;
+            padding: 8px 13px;
+            font-size: 10px;
+          }
+        }
+        tbody {
+          tr {
+            td {
+              vertical-align: middle;
+              color: var(--light-text);
+              font-weight: 600;
+              padding: 0.75rem;
+              .product-name {
+                a {
+                  font-size: 15px;
+                  color: var(--dark-gray);
+                }
+                .order-process {
+                  font-size: 13px;
+                  padding-left: 15px;
+                  .order-process-circle {
+                    position: relative;
+                    &:before {
+                      position: absolute;
+                      content: "";
+                      width: 4px;
+                      height: 4px;
+                      border-radius: 100%;
+                      background-color: var(--dark-gray);
+                      left: -15px;
+                      top: 7px;
+                    }
+                    &.shipped-order {
+                      &:before {
+                        background-color: $success-color;
+                      }
+                    }
+                    &.cancel-order {
+                      &:before {
+                        background-color: $danger-color;
+                      }
+                    }
+                  }
+                }
+              }
+              &.total-amount {
+                color: $theme-body-font-color;
+              }
+              input{
+                &.form-control{
+                  background-color: var(--card-color) !important;
+                  margin: 0 4px;
+                  font-weight: 500;
+                  &:focus{
+                    outline: 1px solid var(--theme-default) !important;
+                  }
+                }
+              }
+            }
+            &:last-child{
+              td{
+                padding-bottom: 0.75rem !important;
+              }
+            }
+          }
+        }
+      }
+    }
+    .input-group {
+      text-align: right;
+      max-width: 300px;
+    }
+    .product-name {
+      h6 {
+        color: $theme-body-font-color;
+        margin-bottom: unset;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+  }
+  .whishlist-main {
+    > div {
+      margin-bottom: -30px;
+    }
+  }
+  @media only screen and (max-width: 575px) {
+    .wishlist {
+      .text-end {
+        text-align: left !important;
+      }
+    }
+  }
+  .order-history{
+    .rdt_Table{
+      .rdt_TableHead{
+       
+        .rdt_TableHeadRow{
+          border: 0;
+          
+          .rdt_TableCol{
+            vertical-align: middle;
+            background-color: rgba(67, 185, 178, 0.05) !important;
+            padding: 15px;
+            font-weight: 600;
+            border-top: 1px solid var(--solid-border);
+            font-size: 16px;
+            line-height: 1.2;
+            color: var(--body-font-color);
+            [data-theme="dark"] & {
+              background-color: var(--card-color) !important;
+              border-bottom: var(--light-border) !important;
+            }
+            &:first-child{
+              min-width: 10%;
+            }
+            &:nth-child(2){
+              min-width: 19%;
+            }
+            &:nth-child(3){
+              min-width: 14%;
+            }
+            &:nth-child(4){
+              min-width: 15%;
+            }
+            &:nth-child(5){
+              min-width: 17%;
+            }
+            &:nth-child(6){
+              min-width: 8%;
+            }
+            &:nth-child(7){
+              min-width: 8%;
+            }
+            &:last-child{
+              min-width: 6%;
+            }
+          }
+        }
+          
+      }
+      .rdt_TableBody{
+        .rdt_TableRow{
+          border: 0;
+          background-color: var(--card-color);
+          &:hover{
+            border: 0;
+            outline: 0;
+          }
+          .rdt_TableCell{
+            border-bottom: var(--light-border);
+            vertical-align: middle;
+            padding: 12px !important;
+            vertical-align: middle;
+            color: var(--light-text);
+            font-weight: 600;
+            &:first-child{
+              min-width: 10%;
+            }
+            &:nth-child(2){
+              min-width: 19%;
+              .product-name{
+                a{
+                  font-size: 15px;
+                  color: var(--dark-gray);
+                  font-weight: 600;
+                }
+                .order-process{
+                  font-size: 13px;
+                  padding-left: 15px;
+                  .order-process-circle{
+                    position: relative;
+                    color: var(--light-text);
+                   
+                    &::before{
+                      position: absolute;
+                      content: "";
+                      width: 4px;
+                      height: 4px;
+                      border-radius: 100%;
+                      background-color: var(--dark-gray);
+                      left: -15px;
+                      top: 7px;
+                    }
+                    &.shipped-order{
+                      &::before{
+                        background-color: #17A600;
+                      }
+                    }
+                    &.cancel-order{
+                      &::before{
+                        background-color: #C42A02;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            &:nth-child(3){
+              min-width: 14%;
+            }
+            &:nth-child(4){
+              min-width: 15%;
+            }
+            &:nth-child(5){
+              min-width: 17%;
+            }
+            &:nth-child(6){
+              min-width: 8%;
+            }
+            &:nth-child(7){
+              min-width: 8%;
+            }
+            &:last-child{
+              min-width: 6%;
+            }
+          }
+          &:last-child{
+            .rdt_TableCell{
+              border-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+    header{
+      background-color: var(--card-color);
+      z-index: 1;
+    }
+  }
+  /**=====================
+      73. Order History CSS Ends
+  ==========================**/

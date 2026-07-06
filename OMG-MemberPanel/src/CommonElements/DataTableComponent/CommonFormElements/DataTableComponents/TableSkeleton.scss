@@ -1,0 +1,132 @@
+:root {
+--skeleton-bg: #e5e7eb;        /* light gray */
+  --skeleton-highlight: #f3f4f6; /* shimmer light */
+  --skeleton-header: #ffffff;    /* pure white */
+  --skeleton-border: #e5e7eb;    /* subtle border */
+}
+.skeleton-wrapper {
+  width: 100%;
+
+  /* Prevent layout shift (IMPORTANT for your flick issue) */
+  overflow-x: hidden;
+
+  /* ---------- TOP BAR ---------- */
+  .skeleton-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 28px;
+    margin-bottom: 8px;
+  }
+
+  .export-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ---------- BOX ---------- */
+  .skeleton-box {
+    position: relative;
+    overflow: hidden;
+    background: var(--skeleton-bg);
+    border-radius: 6px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 150%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--skeleton-highlight),
+        transparent
+      );
+      animation: shimmer 1.2s infinite;
+    }
+  }
+
+  .page-size {
+    width: 120px;
+    height: 32px;
+  }
+
+  .export-btn {
+    width: 58px;
+    height: 32px;
+  }
+
+  /* ---------- TABLE ---------- */
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+      background: var(--skeleton-header);
+  }
+
+  th {
+    padding: 16px 20px;
+    background: var(--skeleton-header);
+  }
+
+  td {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--skeleton-border);
+    background: var(--skeleton-header);
+  }
+
+  /* ---------- TEXT ---------- */
+  .skeleton-text {
+    position: relative;
+    overflow: hidden;
+    height: 14px;
+    width: 100%;
+    background: var(--skeleton-bg);
+    border-radius: 4px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 150%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--skeleton-highlight),
+        transparent
+      );
+      animation: shimmer 1.2s infinite;
+    }
+  }
+
+  .header-text {
+    width: 100px;
+  }
+
+  .cell-text {
+    width: 100%;
+  }
+
+  /* ---------- DARK MODE ---------- */
+  .dark & {
+    --skeleton-bg: #2f2f2f;
+--skeleton-highlight: rgba(255, 255, 255, 0.06);
+--skeleton-header: #262626;
+--skeleton-border: #3a3a3a;
+  }
+}
+
+/* ---------- SHIMMER ---------- */
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}

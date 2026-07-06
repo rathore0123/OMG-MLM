@@ -1,0 +1,149 @@
+.reward-card {
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 15px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.35);
+
+  // Background glass gradient
+  background: linear-gradient(135deg, #748bad 0%, #586c88 100%);
+  //   background-image: url(../../../public/assets/images/rewardBG.webp);
+ margin-bottom: 15px;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  .reward-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .status {
+        background: rgba(255, 255, 255, 0.18);
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 13px;
+      }
+    }
+
+    .reward-icon {
+      width: 62px;
+      height: auto;
+      opacity: 0.85;
+    }
+  }
+
+  .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-top: -18px;
+    margin-bottom: 18px;
+  }
+
+  .label {
+    font-size: 15px;
+    margin-bottom: 5px;
+    opacity: 0.9;
+    padding: 0;
+  }
+
+  .progress-wrapper {
+    margin-top: 8px;
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.29);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 6px;
+
+      .progress-fill {
+        height: 100%;
+        background: #ffffff;
+        border-radius: 6px;
+        transition: width 0.4s ease;
+      }
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 15px;
+      opacity: 0.9;
+
+      .progress-value {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .progress-percent {
+        font-weight: 600;
+      }
+    }
+  }
+
+  .note {
+    margin-top: 12px;
+    font-size: 13px;
+    opacity: 0.9;
+
+    .exp {
+      display: block;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+  }
+}
+
+/* ===== MULTI-COLOR THEMES ===== */
+
+.theme-blue {
+  background: url(../../../public/assets/images/bg-01.webp) no-repeat center,
+    linear-gradient(117.29deg, #92a6c6 21.85%, #748bad 67.02%);
+  background-color: #92a6c6d9;
+}
+
+.theme-purple {
+  background: url(../../../public/assets/images/bg-02.webp) no-repeat center,
+    linear-gradient(117.29deg, #f8bd83 21.85%, #e2984e 67.02%);
+}
+
+.theme-green {
+  background: url(../../../public/assets/images/bg-03.webp) no-repeat center,
+    linear-gradient(117.29deg, #ffa493 21.85%, #ff7878 67.02%);
+}
+
+.theme-orange {
+  background: url(../../../public/assets/images/bg-04.webp) no-repeat center,
+    linear-gradient(117.29deg, #78dbeb 21.85%, #48c7f0 67.02%);
+}
+
+.theme-red {
+  background: url(../../../public/assets/images/bg-05.webp) no-repeat center,
+    linear-gradient(117.29deg, #df91fb 21.85%, #ef82d5 67.02%);
+}
+.theme-green2 {
+  background: url(../../../public/assets/images/bg-06.webp) no-repeat center, linear-gradient(117.29deg,#61dca6 21.85%,#229b5f 67.02%);
+}
+
+.theme-orange2 {
+  background: url(../../../public/assets/images/bg-07.webp) no-repeat center, linear-gradient(117.29deg,#54baf1 21.85%,#3d77e8 67.02%);
+}
+
+.theme-red2 {
+  background: url(../../../public/assets/images/bg-08.webp) no-repeat center, linear-gradient(117.29deg,#eeaf3a 21.85%,#f98b3b 67.02%);
+}

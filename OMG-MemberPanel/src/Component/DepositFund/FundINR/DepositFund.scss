@@ -1,0 +1,1054 @@
+// ============================================================
+// DepositFund.scss — full file including bank detail panel
+// ============================================================
+
+// ── Colour tokens (trezo project vars + hard values) ──────────
+$primary: #2563eb;
+$primary-dk: #1d4ed8;
+$primary-lt: rgba(37, 99, 235, 0.08);
+$teal: #0d9488;
+$teal-lt: rgba(13, 148, 136, 0.1);
+$purple: #7c3aed;
+$purple-lt: rgba(124, 58, 237, 0.1);
+$green: #16a34a;
+$green-lt: rgba(22, 163, 74, 0.1);
+$success: #22c55e;
+$success-lt: rgba(34, 197, 94, 0.1);
+$danger: #ef4444;
+$warning: #f59e0b;
+$warning-lt: rgba(245, 158, 11, 0.1);
+
+$border: var(--border-color, #e5e7eb);
+$card-bg: var(--card-bg);
+$body-bg: var(--body-bg, #f3f4f6);
+$text: var(--heading-color, #111827);
+$text-mid: var(--paragraph-color, #374151);
+$text-muted: var(--muted-color, #6b7280);
+$text-light: var(--light-color, #9ca3af);
+
+$sh-sm: 0 1px 3px rgba(0, 0, 0, 0.07);
+$sh-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+$r-sm: 8px;
+$r-md: 12px;
+$r-lg: 16px;
+
+// ============================================================
+// Page
+// ============================================================
+.deposit-fund-page {
+  background: $body-bg;
+  padding-bottom: 40px;
+}
+
+// ============================================================
+// Wallet Summary Card
+// ============================================================
+.wallet-summary-card {
+  background: $card-bg;
+  border-radius: $r-lg;
+  box-shadow: $sh-md;
+  overflow: hidden;
+  margin-bottom: 20px;
+
+  .wallet-summary-header {
+    background: var(--primary-gradient);
+    padding: 20px 20px 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .wallet-summary-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--btn-text-color);
+    }
+    .wallet-summary-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+  }
+
+  .wallet-summary-visual {
+    display: flex;
+    justify-content: center;
+    margin-top: -113px;
+    position: relative;
+    z-index: 2;
+
+    .wallet-icon-large {
+      width: 184px;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    }
+  }
+
+  .wallet-info-section {
+    padding: 20px 20px 16px;
+
+    .wallet-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+
+      .wallet-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--card-text-color);
+      }
+      .wallet-active-badge {
+        background: $success-lt;
+        color: $success;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 20px;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+      }
+    }
+
+    .wallet-balance-main {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--card-text-color);
+      letter-spacing: -0.5px;
+      margin: 8px 0 16px;
+    }
+
+    .wallet-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .wallet-meta-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: $body-bg;
+      border-radius: $r-sm;
+
+      i {
+        font-size: 16px;
+        margin-top: 2px;
+      }
+
+      .meta-label {
+        font-size: 11px;
+        color: $text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .meta-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--card-text-color);
+        margin-top: 2px;
+      }
+    }
+  }
+
+  .wallet-help-box {
+    margin: 0 16px 16px;
+    padding: 12px 14px;
+    background: var(--btn-bg);
+    border-radius: $r-sm;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border-left: 3px solid var(--card-text-color);
+
+    i {
+      color: var(--btn-text-color);
+      font-size: 16px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+    .help-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--btn-text-color);
+      margin-bottom: 2px;
+    }
+    .help-desc {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+  }
+
+  .bank-info-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 32px);
+    margin: 0 16px 20px;
+    padding: 10px;
+    background: var(--btn-bg);
+    color: var(--btn-text-color);
+    border: none;
+    border-radius: $r-sm;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: var(--btn-hover-bg);
+    }
+  }
+}
+
+// ============================================================
+// Form Card
+// ============================================================
+.deposit-form-card {
+  background: $card-bg;
+  border-radius: $r-lg;
+  box-shadow: $sh-md;
+  padding: 28px 28px 20px;
+  margin-bottom: 16px;
+}
+
+.form-step-section {
+  padding: 4px 0 20px;
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--primary-start, $primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--card-text-color);
+    }
+  }
+}
+
+.step-divider {
+  height: 1px;
+  background: var(--card-border-color, #e5e7eb);
+  margin: 4px 0 24px;
+}
+
+.modern-file-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  padding: 9px 14px 9px 42px;
+  border: 1.5px solid var(--card-border-color, #e2e8f0);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--card-text-color);
+  background: var(--card-bg);
+  outline: none;
+  transition: 0.2s;
+  appearance: none;
+  line-height: inherit;
+}
+
+/* Icon */
+.input-icon {
+  padding: 0 8px;
+  color: #667085;
+}
+
+/* File Name */
+.file-name-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 13px;
+  background: transparent;
+  color: #555;
+}
+
+/* Thumbnail */
+.file-thumb {
+  width: 26px;
+  height: 26px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Upload Button */
+.upload-btn {
+  position: relative;
+  background: #1e6fff;
+  color: #fff;
+  padding: 0 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  position: relative;
+  background: var(--btn-bg);
+  color: var(--btn-text-color);
+  padding: 3px 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 5px;
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &:hover {
+    background: #1557cc;
+  }
+}
+
+/* Left Icon */
+.input-icon {
+  padding: 0 10px;
+  color: #667085;
+  display: flex;
+  align-items: center;
+}
+
+/* File Name */
+.file-name-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 13px;
+  color: var(--card-text-color);
+  background: transparent;
+  text-overflow: ellipsis;
+  width: 70%;
+}
+
+/* Hidden Input Click Layer */
+.real-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Right Thumbnail */
+.file-thumb {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Button */
+.file-actions {
+  margin-top: 6px;
+}
+
+.view-btn {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: #3730a3;
+  }
+}
+
+/* Modal */
+.preview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.preview-content {
+  background: #fff;
+  padding: 10px;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90%;
+
+  img {
+    width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* Error */
+.field-error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.deposit-form-group {
+  margin-bottom: 18px;
+  position: relative;
+  label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--card-text-color);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .wf-sel-prefix-icon {
+    position: absolute;
+    left: 12px;
+    top: 51px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--card-text-color);
+    display: flex;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+  }
+}
+
+.deposit-input {
+  width: 100%;
+  padding: 11px 14px 11px 42px;
+  border: 1.5px solid var(--card-border-color, #e2e8f0);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--card-text-color);
+  background: var(--card-bg);
+  outline: none;
+  transition: 0.2s;
+  appearance: none;
+  line-height: inherit;
+
+  &::placeholder {
+    color: $text-light;
+  }
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 3px $primary-lt;
+  }
+  &:disabled {
+    background: $body-bg;
+    color: $text-muted;
+    cursor: not-allowed;
+  }
+  &.file-input {
+    padding: 9px 11px 9px 42px;
+    cursor: pointer;
+  }
+}
+
+.deposit-select {
+  @extend .deposit-input;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.field-error {
+  font-size: 12px;
+  color: $danger;
+  margin-top: 4px;
+}
+
+.info-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: $warning-lt;
+  border-radius: $r-sm;
+  border-left: 3px solid $warning;
+  margin-top: 4px;
+
+  i {
+    color: darken(#f59e0b, 10%);
+    font-size: 15px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+  span {
+    font-size: 12.5px;
+    color: var(--card-text-color, #374151);
+    line-height: 1.6;
+  }
+}
+
+// ============================================================
+// Form Actions
+// ============================================================
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 15px;
+
+  .cancel-btn {
+    padding: 10px 24px;
+    border: 1.5px solid $border;
+    border-radius: $r-sm;
+    background: $card-bg;
+    color: $text-mid;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: $text-muted;
+      color: $text;
+      background: $body-bg;
+    }
+  }
+
+  .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 28px;
+    background: var(--btn-bg);
+    color: var(--btn-text-color, #fff);
+    border: none;
+    border-radius: $r-sm;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      box-shadow 0.2s;
+
+    &:hover:not(:disabled) {
+      background: $primary-dk;
+      box-shadow: 0 4px 12px rgba($primary, 0.35);
+    }
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ============================================================
+// Secure Footer
+// ============================================================
+.secure-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--card-border-color, #e5e7eb);
+
+  > i:first-child {
+    font-size: 20px;
+    color: $text-light;
+  }
+  > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    strong {
+      font-size: 13px;
+      color: var(--card-text-color, #111827);
+    }
+    span {
+      font-size: 12px;
+      color: rgba(var(--card-text-color-rgba), 0.8);
+    }
+  }
+  > i.text-success {
+    font-size: 20px;
+    color: $success !important;
+  }
+}
+
+// ============================================================
+// Bank Card (modal)
+// ============================================================
+.bank-card {
+  background: $card-bg;
+  border: 1px solid $border;
+  border-radius: $r-md;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: $sh-sm;
+
+  .bank-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .bank-holder-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: $primary;
+    }
+    .bank-name-badge {
+      background: $primary-lt;
+      color: $primary;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+  }
+
+  .bank-divider {
+    border: none;
+    border-top: 1px solid $border;
+    margin: 10px 0;
+  }
+
+  .bank-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    align-items: center;
+    gap: 12px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .bank-detail-item {
+    .detail-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: $text-light;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .detail-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: $text;
+    }
+  }
+
+  .bank-qr img {
+    height: 90px;
+    width: 90px;
+    border-radius: $r-sm;
+    border: 1px solid $border;
+  }
+}
+
+// ============================================================
+// ════════════════════════════════════════════════════════════
+//  SELECTED BANK DETAIL PANEL
+// ════════════════════════════════════════════════════════════
+// ============================================================
+.df-bank-panel {
+  border: 1.5px solid var(--card-border-color);
+  border-radius: $r-md;
+  overflow: hidden;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  animation: dfPanelIn 0.2s ease;
+}
+
+@keyframes dfPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Panel header ──────────────────────────────────────────
+.df-bp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--body-bg);
+  border-bottom: 1px solid rgba($primary, 0.12);
+}
+
+.df-bp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.df-bp-bank-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    color: #fff;
+    font-size: 16px;
+  }
+}
+
+.df-bp-bank-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1.2;
+}
+
+.df-bp-holder {
+  font-size: 12px;
+  color: $text-muted;
+  margin-top: 1px;
+}
+
+.df-bp-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: $success-lt;
+  color: $green;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba($green, 0.25);
+  white-space: nowrap;
+
+  i {
+    font-size: 11px;
+  }
+}
+
+// ── Panel body ────────────────────────────────────────────
+.df-bp-body {
+  display: flex;
+  gap: 0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+// ── Detail rows side ─────────────────────────────────────
+.df-bp-rows {
+  flex: 1;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.df-bp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--body-bg, #f3f4f6);
+  border: 1px solid var(--card-border-color, #e5e7eb);
+  margin-bottom: 6px;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: rgba($primary, 0.3);
+  }
+
+  // UPI row — slightly highlighted
+  &.df-bp-row--upi {
+    background: var(--card-border-color);
+    border-color: rgba(var(--card-text-color-rgba), 0.1);
+
+    &:hover {
+      border-color: rgba($green, 0.4);
+    }
+  }
+}
+
+.df-bp-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+// coloured icon bubble
+.df-bp-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 14px;
+  }
+
+  &--blue {
+    background: $primary-lt;
+    color: $primary;
+  }
+  &--purple {
+    background: $purple-lt;
+    color: $purple;
+  }
+  &--teal {
+    background: $teal-lt;
+    color: $teal;
+  }
+  &--green {
+    background: $green-lt;
+    color: $green;
+  }
+}
+
+.df-bp-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.df-bp-key {
+  font-size: 10.5px;
+  color: rgba(var(--card-text-color-rgba), 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.df-bp-val {
+  font-size: 13.5px;
+  color: var(--card-text-color, #111827);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.df-bp-upi-id {
+    color: $green;
+    font-size: 13px;
+  }
+}
+
+// ── Tip notice ───────────────────────────────────────────
+.df-bp-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: $warning-lt;
+  border-radius: $r-sm;
+  border-left: 3px solid $warning;
+  margin-top: 6px;
+
+  i {
+    color: darken(#f59e0b, 10%);
+    font-size: 13px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+  span {
+    font-size: 12px;
+    color: var(--card-text-color, #374151);
+    line-height: 1.5;
+  }
+}
+
+// ── QR side ──────────────────────────────────────────────
+.df-bp-qr {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 16px 16px 0;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0 16px 16px;
+    flex-direction: row;
+    justify-content: center;
+    gap: 14px;
+  }
+}
+
+.df-bp-qr-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.df-bp-qr-frame {
+  width: 124px;
+  height: 124px;
+  border-radius: $r-sm;
+  border: 2px solid $border;
+  padding: 6px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $sh-sm;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+}
+
+.df-bp-qr-hint {
+  font-size: 11px;
+  color: var(--card-text-color, #9ca3af);
+}
+
+// ── Copy button ───────────────────────────────────────────
+.df-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
+  background: var(--btn-bg);
+  color: var(--btn-text-color, #6b7280);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: $primary;
+    border-color: $primary;
+    color: #fff;
+
+    svg {
+      stroke: #fff;
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+// ============================================================
+// Responsive
+// ============================================================
+@media (max-width: 768px) {
+  .deposit-form-card {
+    padding: 20px 16px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    .cancel-btn,
+    .submit-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .wallet-summary-card {
+    margin-bottom: 16px;
+  }
+
+  .df-bp-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .df-bp-row-left {
+    flex: 1;
+  }
+  .df-copy-btn {
+    align-self: flex-end;
+  }
+}
+
+// ============================================================
+// USDT field extras
+// ============================================================
+.df-usdt-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .deposit-input {
+    padding-right: 58px;
+  }
+}
+
+.df-usdt-badge {
+  position: absolute;
+  right: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  padding: 2px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+  letter-spacing: 0.4px;
+}
+
+.df-usdt-loader {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #6b7280;
+  font-style: italic;
+}

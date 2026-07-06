@@ -1,0 +1,849 @@
+// ══════════════════════════════════════════════════════════════════
+//  GENEALOGY BINARY TREE — PREMIUM SCSS
+//  Matches reference image exactly.
+//  Theme: .dark / .light on .gbt-root
+//  Hover popup: state-controlled (React), not CSS :hover
+// ══════════════════════════════════════════════════════════════════
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
+
+// ── TOKENS ───────────────────────────────────────────────────────
+$font-ui:      'Inter', sans-serif;
+$font-display: 'Sora', sans-serif;
+
+// Accent palette
+$blue:         #4f8ef7;
+$blue-dim:     rgba(79, 142, 247, 0.14);
+$blue-glow:    rgba(79, 142, 247, 0.30);
+$green:        #22c55e;
+$green-dim:    rgba(34, 197, 94, 0.15);
+$red:          #ef4444;
+$red-dim:      rgba(239, 68, 68, 0.15);
+
+// ── ANIMATIONS ───────────────────────────────────────────────────
+@keyframes gbt-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gbt-tooltip-in {
+  from { opacity: 0; transform: translateX(-50%) scale(0.94) translateY(6px); }
+  to   { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+}
+
+@keyframes gbt-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── ROOT — theme vars injected here ──────────────────────────────
+.gbt-root {
+  font-family: $font-ui;
+  min-height: 100vh;
+
+  // ────────── DARK ──────────────────────────────────────────────
+  &.dark {
+    --page-bg:        #0d1117;
+    --surface:        #161b27;
+    --card-bg:        #1a2130;
+    --card-border:    #263248;
+    --card-hover-bg:  #1f2840;
+    --card-hover-bdr: #{$blue};
+    --text:           #e2e8f0;
+    --muted:          #5a6a85;
+    --dim:            #3a4a62;
+    --line:           #263248;
+    --ctrl-bg:        #1a2130;
+    --ctrl-border:    #263248;
+    --ctrl-hover:     rgba(79,142,247,0.12);
+    --sidebar-bg:     #161b27;
+    --sidebar-border: #263248;
+    --sb-row-border:  rgba(255,255,255,0.05);
+    --avatar-bg:      linear-gradient(135deg, #1c2d4a, #1a3060);
+    --avatar-text:    #{$blue};
+    --blank-bg:       rgba(79,142,247,0.08);
+    --blank-border:   rgba(79,142,247,0.30);
+    --tt-bg:          rgba(13,17,23,0.97);
+    --tt-border:      rgba(79,142,247,0.20);
+    --shadow-card:    0 4px 20px rgba(0,0,0,0.5);
+    --shadow-hover:   0 0 0 2px #{$blue-glow}, 0 8px 32px rgba(0,0,0,0.6);
+    --shadow-tt:      0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(79,142,247,0.15);
+    --breadcrumb:     #4a5568;
+    --breadcrumb-act: #{$blue};
+    --divider:        rgba(255,255,255,0.06);
+    --biz-bg:         rgba(79,142,247,0.07);
+    --biz-border:     rgba(79,142,247,0.12);
+  }
+
+  // ────────── LIGHT ─────────────────────────────────────────────
+  &.light {
+    --page-bg:        #f0f4f9;
+    --surface:        #ffffff;
+    --card-bg:        #ffffff;
+    --card-border:    #dde5f0;
+    --card-hover-bg:  #f8fbff;
+    --card-hover-bdr: #{$blue};
+    --text:           #1a2340;
+    --muted:          #8899b0;
+    --dim:            #c8d5e8;
+    --line:           #d0dce8;
+    --ctrl-bg:        #ffffff;
+    --ctrl-border:    #dde5f0;
+    --ctrl-hover:     rgba(79,142,247,0.08);
+    --sidebar-bg:     #ffffff;
+    --sidebar-border: #dde5f0;
+    --sb-row-border:  rgba(0,0,0,0.05);
+    --avatar-bg:      linear-gradient(135deg, #dbeafe, #bfdbfe);
+    --avatar-text:    #2563eb;
+    --blank-bg:       rgba(79,142,247,0.06);
+    --blank-border:   rgba(79,142,247,0.25);
+    --tt-bg:          rgba(255,255,255,0.98);
+    --tt-border:      rgba(79,142,247,0.18);
+    --shadow-card:    0 2px 10px rgba(0,0,0,0.08);
+    --shadow-hover:   0 0 0 2px #{$blue-glow}, 0 8px 24px rgba(0,0,0,0.12);
+    --shadow-tt:      0 12px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(79,142,247,0.12);
+    --breadcrumb:     #94a3b8;
+    --breadcrumb-act: #{$blue};
+    --divider:        rgba(0,0,0,0.06);
+    --biz-bg:         rgba(79,142,247,0.05);
+    --biz-border:     rgba(79,142,247,0.10);
+  }
+
+  background: var(--page-bg);
+  color: var(--text);
+}
+
+// ── PAGE HEADER ───────────────────────────────────────────────────
+.gbt-page-header {
+  padding: 24px 28px 0;
+  animation: gbt-fadein 0.3s ease both;
+}
+
+.gbt-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+
+  .bc-seg {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--breadcrumb);
+    cursor: pointer;
+    transition: color 0.15s;
+
+    &:hover { color: var(--text); }
+    &.bc-active { color: var(--breadcrumb-act); }
+  }
+
+  .bc-div {
+    font-size: 12px;
+    color: var(--muted);
+  }
+}
+
+.gbt-page-title {
+  font-family: $font-display;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 2px;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+
+// ── NAVIGATION CONTROLS ────────────────────────────────────────────
+.gbt-controls {
+  display: flex;
+  gap: 8px;
+  padding: 16px 28px;
+  flex-wrap: wrap;
+  animation: gbt-fadein 0.3s 0.05s ease both;
+  border-bottom: 1px solid var(--divider);
+  margin-bottom: 0;
+}
+
+.gbt-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: var(--ctrl-bg);
+  border: 1px solid var(--ctrl-border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: $font-ui;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
+  white-space: nowrap;
+
+  svg { opacity: 0.7; transition: opacity 0.15s; }
+
+  &:hover {
+    background: var(--ctrl-hover);
+    border-color: rgba($blue, 0.4);
+    color: $blue;
+    transform: translateY(-1px);
+
+    svg { opacity: 1; }
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+// ── BODY (tree + sidebar) ─────────────────────────────────────────
+.gbt-body {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+  height: calc(100vh - 140px);
+  overflow: hidden;
+}
+
+// ── CANVAS WRAP (scrollable tree area) ────────────────────────────
+.gbt-canvas-wrap {
+  flex: 1;
+  overflow: auto;
+  height: 100%;
+  padding: 40px 32px;
+  animation: gbt-fadein 0.4s 0.1s ease both;
+}
+
+.gbt-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: max-content;
+  padding-bottom: 32px;
+}
+
+// ── TREE NODE COLUMN ──────────────────────────────────────────────
+.gbt-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+// Outer wrapper keeps tooltip in correct stacking context
+.gbt-card-outer {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// ── NODE CARD ─────────────────────────────────────────────────────
+.gbt-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  min-height: 130px;
+  padding: 16px 10px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.18s;
+  gap: 4px;
+  position: relative;
+  overflow: visible;
+
+  // subtle inner gradient
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(140deg, rgba($blue, 0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  &:hover,
+  &.gbt-card--hovered {
+    border-color: var(--card-hover-bdr);
+    background: var(--card-hover-bg);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+  }
+
+  // Root node — larger
+  &.gbt-card--root {
+    width: 140px;
+    min-height: 150px;
+    border-color: rgba($blue, 0.45);
+    background: linear-gradient(135deg, rgba($blue, 0.10), var(--card-bg) 70%);
+
+    &::before {
+      background: linear-gradient(140deg, rgba($blue, 0.12) 0%, transparent 60%);
+    }
+  }
+
+  // Blank (+) node
+  &.gbt-card--blank {
+    border: 1.5px dashed var(--blank-border);
+    background: var(--blank-bg);
+    box-shadow: none;
+
+    &:hover {
+      border-color: $blue;
+      background: $blue-dim;
+      box-shadow: none;
+      transform: translateY(-2px);
+    }
+
+    &::before { display: none; }
+  }
+
+}
+
+// ── PAID / UNPAID COLOUR CODING (standalone — avoids nesting specificity issues) ──
+.gbt-card.gbt-card--paid {
+  border-color: #5d8f2b;
+  box-shadow: 0 0 0 2px rgba(93, 143, 43, 0.22), var(--shadow-card);
+
+  .gbt-avatar {
+    border: 3px solid #5d8f2b;
+    box-shadow: 0 0 0 3px rgba(93, 143, 43, 0.20);
+  }
+
+  &:hover, &.gbt-card--hovered {
+    border-color: #3d6b16;
+    box-shadow: 0 0 0 3px rgba(93, 143, 43, 0.30), 0 8px 24px rgba(0,0,0,0.2);
+  }
+}
+
+.gbt-card.gbt-card--unpaid {
+  border-color: #f80909;
+  box-shadow: 0 0 0 2px rgba(248, 9, 9, 0.18), var(--shadow-card);
+
+  .gbt-avatar {
+    border: 3px solid #f80909;
+    box-shadow: 0 0 0 3px rgba(248, 9, 9, 0.16);
+  }
+
+  &:hover, &.gbt-card--hovered {
+    border-color: #c40000;
+    box-shadow: 0 0 0 3px rgba(248, 9, 9, 0.28), 0 8px 24px rgba(0,0,0,0.2);
+  }
+}
+
+// Blue name pill for real nodes (matches admin .name { background: #4476e4 })
+.gbt-card:not(.gbt-card--blank) .gbt-node-name {
+  background: #4476e4;
+  color: #fff;
+  border-radius: 5px;
+  padding: 2px 8px;
+}
+
+// ── AVATAR ────────────────────────────────────────────────────────
+.gbt-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--avatar-bg);
+  border: 2px solid rgba($blue, 0.30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: $font-display;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--avatar-text);
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &.gbt-avatar--root {
+    width: 66px;
+    height: 66px;
+    font-size: 20px;
+    border-color: rgba($blue, 0.55);
+  }
+}
+
+// ── BLANK CIRCLE ─────────────────────────────────────────────────
+.gbt-blank-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--blank-bg);
+  border: 2px dashed var(--blank-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $blue;
+  transition: all 0.18s;
+
+  .gbt-card:hover & {
+    border-color: $blue;
+    background: $blue-dim;
+  }
+}
+
+// ── NODE TEXT ─────────────────────────────────────────────────────
+.gbt-node-name {
+  font-family: $font-display;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.35;
+  margin: 0;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.gbt-node-id {
+  font-family: $font-ui;
+  font-size: 10px;
+  font-weight: 400;
+  color: $blue;
+  text-align: center;
+  margin: 0;
+}
+
+// ── CONNECTOR LINES ───────────────────────────────────────────────
+
+// Vertical stem from parent card down
+.gbt-stem {
+  width: 1.5px;
+  height: 28px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+// Wrapper for horizontal bar
+.gbt-hbar-wrap {
+  position: relative;
+}
+
+// Subtree (stem + hbar + children)
+.gbt-subtree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// Children row container
+.gbt-children {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+
+  // The horizontal bar connecting children
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    // span between centers of first and last child branch
+    left: calc(60px);
+    right: calc(60px);
+    height: 1.5px;
+    background: var(--line);
+  }
+}
+
+// Each child branch: vstem + subtree
+.gbt-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px;
+  position: relative;
+}
+
+// Vertical stem from horizontal bar down to child card
+.gbt-vstem {
+  width: 1.5px;
+  height: 24px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+// ── HOVER TOOLTIP ─────────────────────────────────────────────────
+// This is shown/hidden by React state — not CSS :hover.
+// Positioned above the card, centered horizontally.
+.gbt-tooltip {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  z-index: 9999;
+  background: var(--tt-bg);
+  border: 1px solid var(--tt-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-tt);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  overflow: hidden;
+  animation: gbt-tooltip-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: none; // tooltip is read-only; doesn't block clicks
+
+  // Arrow pointing down
+  .gbt-tooltip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 13px;
+    height: 13px;
+    background: var(--tt-bg);
+    border-right: 1px solid var(--tt-border);
+    border-bottom: 1px solid var(--tt-border);
+  }
+}
+
+// Tooltip header
+.gbt-tt-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 10px;
+  background: linear-gradient(135deg, rgba($blue, 0.12), transparent 70%);
+}
+
+.gbt-tt-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--avatar-bg);
+  border: 1.5px solid rgba($blue, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-display;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--avatar-text);
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+}
+
+.gbt-tt-title {
+  min-width: 0;
+
+  .gbt-tt-name {
+    font-family: $font-display;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .gbt-tt-id {
+    font-size: 11px;
+    color: $blue;
+    font-weight: 500;
+    margin: 1px 0 0;
+  }
+}
+
+.gbt-tt-divider {
+  height: 1px;
+  background: var(--divider);
+  margin: 0;
+}
+
+.gbt-tt-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+}
+
+.gbt-tt-sec-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.gbt-tt-grid {
+  padding: 0 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.gbt-tt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+
+  .gbt-tt-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .gbt-tt-val {
+    font-size: 11px;
+    color: var(--text);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+
+    &.accent { color: $blue; font-weight: 600; }
+  }
+}
+
+// Business stats inside tooltip
+.gbt-tt-biz {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  padding: 0 14px 12px;
+
+  .gbt-biz-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 5px 4px;
+
+    span {
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    strong {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      font-family: $font-display;
+    }
+  }
+}
+
+// ── STATUS PILL (shared) ──────────────────────────────────────────
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &.active {
+    background: $green-dim;
+    color: $green;
+  }
+
+  &.inactive {
+    background: $red-dim;
+    color: $red;
+  }
+}
+
+// ── RIGHT SIDEBAR ─────────────────────────────────────────────────
+.gbt-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border-left: 1px solid var(--sidebar-border);
+  height: 100%;
+  overflow-y: auto;
+  animation: gbt-fadein 0.4s 0.15s ease both;
+}
+
+.gbt-sb-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--divider);
+  background: linear-gradient(135deg, rgba($blue, 0.10), transparent 70%);
+
+  .gbt-sb-icon { color: $blue; display: flex; }
+
+  .gbt-sb-title {
+    font-family: $font-display;
+    font-size: 13px;
+    font-weight: 700;
+    color: $blue;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+.gbt-sb-empty {
+  padding: 48px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+// Sidebar detail rows
+.gbt-sb-rows {
+  padding: 8px 0;
+}
+
+.gbt-sb-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--sb-row-border);
+
+  &:last-child { border-bottom: none; }
+}
+
+.gbt-sb-row-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  max-width: 55%;
+}
+
+.gbt-sb-row-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: $blue-dim;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $blue;
+  flex-shrink: 0;
+}
+
+.gbt-sb-row-label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.gbt-sb-row-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: right;
+  word-break: break-word;
+  font-family: $font-display;
+}
+
+// Business stats grid
+.gbt-sb-biz {
+  margin: 12px 16px 16px;
+  background: var(--biz-bg);
+  border: 1px solid var(--biz-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.gbt-biz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  .gbt-biz-stat-label {
+    font-size: 10.5px;
+    color: var(--muted);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .gbt-biz-stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: $font-display;
+  }
+}
+
+// ── LOADER ───────────────────────────────────────────────────────
+.gbt-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+}
+
+.gbt-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--line);
+  border-top-color: $blue;
+  border-radius: 50%;
+  animation: gbt-spin 0.7s linear infinite;
+}
+
+.gbt-empty {
+  text-align: center;
+  padding: 80px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+// ── RESPONSIVE ───────────────────────────────────────────────────
+@media (max-width: 1100px) {
+  .gbt-body {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+
+  .gbt-canvas-wrap {
+    height: auto;
+    width: 100%;
+  }
+
+  .gbt-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--sidebar-border);
+    height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .gbt-page-header { padding: 16px 16px 0; }
+  .gbt-controls    { padding: 12px 16px; gap: 6px; }
+
+  .gbt-ctrl-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+
+    span { display: none; }
+  }
+
+  .gbt-card { width: 96px; min-height: 110px; padding: 12px 8px 10px; }
+  .gbt-card.gbt-card--root { width: 112px; }
+
+  .gbt-avatar { width: 44px; height: 44px; font-size: 14px; }
+  .gbt-avatar.gbt-avatar--root { width: 54px; height: 54px; }
+
+  .gbt-branch { padding: 0 12px; }
+
+  .gbt-tooltip { width: 240px; }
+}

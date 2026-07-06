@@ -1,0 +1,857 @@
+/**=====================
+    React Plugin 
+==========================**/
+/**==dropzone==**/
+.dzu-dropzone {
+  border: 2px dashed $primary-color !important;
+  overflow: auto !important;
+  border-radius: 15px;
+  .dzu-inputLabel {
+    padding: 0 14px;
+    font-size: 16px;
+    color: var(--body-font-color);
+    text-align: center;
+    margin-bottom: 0;
+  }
+  .dzu-previewImage {
+    max-height: 50px;
+  }
+  .dz-message {
+    .note {
+      background-color: $transparent-color;
+    }
+  }
+  .dzu-previewContainer {
+    padding: 16px 2%;
+    .dzu-previewStatusContainer {
+      span {
+        filter: brightness(3);
+      }
+    }
+  }
+  .dzu-inputLabelWithFiles {
+    background-color: $primary-color;
+    color: $white;
+  }
+  .dzu-submitButtonContainer {
+    margin: 24px;
+    margin-left: auto;
+    .dzu-submitButton {
+      background-color: $primary-color;
+      color: $white;
+    }
+  }
+}
+.calendar-basic {
+  #external-events {
+    h4 {
+      margin-bottom: 14px;
+    }
+    p {
+      margin-top: 12px;
+    }
+    .fc-h-event {
+      padding: 12px !important;
+      background-color: $primary-color !important;
+      border: 1px solid $primary-color !important;
+      +.fc-h-event {
+        margin-top: 10px;
+      }
+      .fc-event-main {
+        font-size: 13px;
+      }
+    }
+  }
+  .calendar-default {
+    .fc-daygrid-dot-event {
+      .fc-event-title {
+        text-overflow: ellipsis;
+      }
+    }
+    .fc {
+      td[role='presentation'] {
+        border: 0;
+      }
+      .fc-daygrid-day-number,
+      .fc-col-header-cell-cushion {
+        color: $theme-body-font-color !important;
+      }
+      .fc-button {
+        .fc-icon {
+          height: 23px;
+        }
+      }
+    }
+    .fc-h-event {
+      padding: 2px 4px;
+      background-color: $primary-color !important;
+      border: 1px solid $primary-color !important;
+    }
+    .fc-toolbar-chunk {
+      .fc-button-group {
+        ~.fc-today-button {
+          margin: 0 8px;
+        }
+      }
+    }
+    .fc-theme-standard .fc-scrollgrid {
+      border: 1px solid rgb(221 221 221);
+      border: 1px solid var(--fc-border-color, #ddd);
+    }
+    .fc-scroller-liquid-absolute {
+      overflow: unset !important;
+    }
+  }
+}
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  >span {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0px;
+  }
+  .br-selected {
+    display: block;
+    width: 12px;
+    padding: 5px 0;
+    height: 28px;
+    float: left;
+    background-color: rgb(232 230 255);
+    margin: 1px;
+    text-align: center;
+  }
+  .br-widget {
+    display: block;
+    width: calc(40px + (60 - 40) * ((100vw - 320px) / (1920 - 320)));
+    height: 8px;
+    float: left;
+    background-color: rgb(232 230 255);
+    margin: 1px;
+  }
+  .br-current {
+    background-color: $primary-color !important;
+    color: $white !important;
+  }
+  .square-number {
+    background-color: $white;
+    border: 2px solid rgba($primary-color, 0.3);
+    color: rgba($primary-color, 0.3);
+    display: block;
+    float: left;
+    font-size: 14px;
+    font-weight: 600;
+    height: 30px;
+    line-height: 1.8;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    width: 30px;
+    &.active {
+      border: 2px solid $primary-color;
+      color: $primary-color;
+    }
+    [data-theme="dark"] & {
+      background-color: var(--body-color);
+    }
+  }
+  &.reverse {
+    .square-number {
+      width: 22px;
+      height: 22px;
+    }
+  }
+  .text-body {
+    color: $theme-body-font-color;
+  }
+  .star {
+    color: #ffa800;
+  }
+  &.pill-rating-list {
+    .pill-rating {
+      padding: 7px 15px;
+      background-color: rgb(232 230 255);
+      color: var(--theme-default);
+      text-decoration: none;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 400;
+    }
+    >span {
+      >span {
+        &:first-of-type {
+          .pill-rating {
+            border-top-left-radius: 999px;
+            border-bottom-left-radius: 999px;
+          }
+        }
+        &:last-of-type {
+          .pill-rating {
+            border-top-right-radius: 999px;
+            border-bottom-right-radius: 999px;
+          }
+        }
+      }
+    }
+  }
+  .current-rating {
+    font-size: 20px;
+    line-height: 1;
+    color: var(--theme-default);
+    font-weight: 400;
+  }
+}
+.reactour__popover {
+  background-color: $primary-color !important;
+  color: $white !important;
+  span {
+    background-color: $primary-color !important;
+    padding: 0 10px !important;
+    border-radius: 100% !important;
+    border: 1px solid $white;
+    height: unset !important;
+  }
+  .reactour__close-button {
+    top: -18px !important;
+    right: -18px !important;
+    color: $white;
+    height: 12px;
+    width: 12px;
+  }
+  >div[dir] {
+    >button {
+      display: flex !important;
+      color: $white !important;
+      svg {
+        color: $white !important;
+      }
+    }
+  }
+}
+.text-base {
+  font-size: 16px;
+}
+/**==resetclass==**/
+.pull-right {
+  float: right;
+  margin-left: auto;
+}
+.sidebar-links {
+  &::-webkit-scrollbar {
+    width: 0;
+    background-color: transparent;
+    opacity: 0;
+  }
+}
+.table {
+  &.table-borderless {
+    thead {
+      th {
+        border: none;
+      }
+    }
+  }
+}
+@media only screen and (min-width: 1280px) {
+  .box-layout {
+    .items-slider {
+      .box-col-33 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  }
+}
+.sidebar-title-alignment {
+  margin-bottom: -2px;
+}
+/**==accordian==**/
+.simple-Accordion {
+  .accordion-header {
+    .accordion-button {
+      background-color: $light-primary;
+      color: $primary-color;
+    }
+  }
+}
+.Flush-Accordion {
+  .accordion-header {
+    .accordion-button {
+      background-color: $light-success;
+      color: $success-color;
+      &.collapsed {
+        background-color: unset;
+      }
+    }
+  }
+}
+.icon-accordion {
+  .accordion-header {
+    .accordion-button {
+      background-color: $light-secondary;
+      color: $secondary-color;
+      svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 5px;
+      }
+    }
+  }
+}
+.outline-accordion {
+  .accordion-header {
+    .accordion-button {
+      background-color: $light-primary;
+      color: $primary-color;
+      &.collapsed {
+        background-color: unset;
+      }
+    }
+  }
+}
+.Dark-Card {
+  .bg-dark {
+    color: $white;
+  }
+}
+/**==pointer==**/
+.pointer {
+  cursor: pointer;
+}
+.loginImageBg {
+  background-image: url("../../../assets/images/login/2.jpg");
+  background-size: "cover";
+  background-position: "center center";
+  display: "block";
+}
+.loginImageBg3 {
+  background-image: url("../../../assets/images/login/2.jpg");
+  background-size: "cover";
+  background-position: "center center";
+  display: "block";
+}
+.loginImageBg1 {
+  background-image: url("../../../assets/images/login/1.jpg");
+  background-size: "cover";
+  background-position: "center center";
+  display: "block";
+}
+.flatpicker-calender {
+  >div {
+    width: 100%;
+  }
+}
+.rmdp-container {
+  width: 100%;
+}
+/**==typeahead==**/
+.suggestion-box {
+  position: absolute;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  background-color: var(--card-color);
+  box-shadow: 0 0 2px 2px #f1f3f7;
+  margin-top: 5px;
+  ul,
+  .list-group {
+    max-height: 240px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    li {
+      padding: 10px 0;
+      &:hover {
+        span {
+          color: var(--primary-color);
+        }
+        svg {
+          stroke: var(--primary-color);
+        }
+      }
+      a {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--theme-body-font-color);
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+        span {
+          line-height: 1;
+          margin-bottom: -3px;
+        }
+      }
+    }
+  }
+  p {
+    text-align: center;
+    font-size: 18px;
+    color: var(--light-text);
+    margin: 10px 0;
+  }
+}
+.Typeahead {
+  width: 100%;
+  * {
+    box-sizing: border-box;
+    &:before {
+      box-sizing: border-box;
+    }
+    &:after {
+      box-sizing: border-box;
+    }
+  }
+  .tt-hint {
+    display: none !important;
+  }
+}
+.u-cf {
+  &:before {
+    content: ' ';
+    display: table;
+  }
+  &:after {
+    content: ' ';
+    display: table;
+    clear: both;
+  }
+}
+.u-hidden {
+  display: none !important;
+}
+.u-posRelative {
+  position: relative;
+}
+.Typeahead-spinner {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  display: none;
+  color: $light-color;
+}
+.ProfileCard-avatar {
+  svg {
+    vertical-align: bottom;
+    left: 15px;
+    height: 20px;
+    width: 20px;
+    stroke: var(--theme-default);
+    @media (max-width: 767px) {
+      height: 15px;
+      width: 15px;
+      vertical-align: middle;
+    }
+    path {
+      color: var(--dark-gray) !important;
+    }
+    polygon {
+      color: var(--dark-gray) !important;
+    }
+  }
+}
+.Typeahead-hint {
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 24px;
+  line-height: 30px;
+  border: 1px solid var(--color-fiord);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--gray-60);
+  opacity: 1;
+}
+.Typeahead-menu {
+  position: absolute;
+  top: 62%;
+  left: 0;
+  padding: 15px;
+  z-index: 100;
+  display: none;
+  max-height: 120px;
+  width: 100%;
+  overflow: auto;
+  background-color: var(--card-color);
+  box-shadow: none;
+  margin-top: 15px;
+  min-height: 227px;
+}
+.Typeahead-menu.is-open {
+  display: block;
+}
+.Typeahead-selectable {
+  cursor: pointer;
+  + {
+    .Typeahead-selectable {
+      border-top: 1px solid var(--gray-60);
+    }
+  }
+}
+.ProfileCard {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 10px;
+  border: 1px solid var(--solid-border) !important;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  &:hover {
+    .ProfileCard-avatar {
+      border-color: var(--border-table);
+    }
+    color: var(--color-scarpa);
+    background: var(--border-table);
+    .ProfileCard-screenName {
+      color: $white;
+    }
+    .ProfileCard-stat-label {
+      color: $white;
+    }
+  }
+}
+.ProfileCard-avatar {
+  position: absolute;
+  border-radius: 5px;
+}
+.ProfileCard-details {
+  padding-left: 35px;
+  float: left;
+  width: 100%;
+  @media (max-width: 767px) {
+    padding-left: 20px;
+  }
+}
+.ProfileCard-realName {
+  display: flex;
+  color: var(--dark-gray);
+  justify-content: space-between;
+  a {
+    @media (max-width: 767px) {
+      font-size: 12px;
+    }
+  }
+}
+.ProfileCard-screenName {
+  display: inline-block;
+  color: var(--dark-gray);
+}
+.ProfileCard-description {
+  margin-top: 5px;
+  font-size: 14px;
+  line-height: 18px;
+}
+.ProfileCard-stats {
+  float: right;
+  text-align: right;
+}
+.ProfileCard-stat {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  + {
+    .ProfileCard-stat {
+      margin-left: 5px;
+    }
+  }
+}
+.ProfileCard-stat-label {
+  color: var(--dark-gray);
+  font-weight: 500;
+}
+.ProfileCard.is-active {
+  color: $white;
+  background: var(--theme-default);
+  .ProfileCard-screenName {
+    color: $white;
+  }
+  .ProfileCard-stat-label {
+    color: $white;
+  }
+}
+.EmptyMessage {
+  position: relative;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 30px;
+  text-align: center;
+}
+.Typeahead-spinner {
+  width: 1rem;
+  height: 1rem;
+}
+.datepicker-here {
+  width: 100%;
+  .react-datepicker {
+    border: none;
+    width: 100%;
+    .react-datepicker__navigation-icon {
+      &:before {
+        border-color: #52526ccc;
+      }
+    }
+    .react-datepicker__navigation--previous {
+      left: 0;
+    }
+    .react-datepicker__navigation--next {
+      right: 0;
+    }
+    .react-datepicker__month-container {
+      width: 100%;
+      .react-datepicker__header {
+        background-color: unset;
+        border: none;
+        .react-datepicker__current-month {
+          font-size: 20px;
+        }
+        .react-datepicker__day-names {
+          .react-datepicker__day-name {
+            font-size: 14px;
+            width: 2.25rem;
+            font-weight: 600;
+            @media (max-width:480px) {
+              width: 1.75rem;
+            }
+          }
+        }
+      }
+      .react-datepicker__month {
+        .react-datepicker__week {
+          .react-datepicker__day {
+            width: 2.25rem;
+            @media (max-width:480px) {
+              width: 1.75rem;
+            }
+            &.react-datepicker__day--today {
+              background-color: #54BA4A;
+              color: $white;
+              border-radius: 5px;
+            }
+            &:hover {
+              background-color: $primary-color;
+              color: $white;
+            }
+            &.react-datepicker__day--selected {
+              background-color: $primary-color;
+              color: $white;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.school-manage {
+  .datepicker-here {
+    .react-datepicker {
+      .react-datepicker__month-container {
+        .react-datepicker__header {
+          .react-datepicker__day-names {
+            .react-datepicker__day-name {
+              width: 1.7rem;
+              @media (min-width:1399px) and (max-width:1499px) {
+                width: 1.25rem;
+              }
+            }
+          }
+        }
+        .react-datepicker__month {
+          .react-datepicker__week {
+            .react-datepicker__day {
+              width: 1.7rem;
+              @media (min-width:1399px) and (max-width:1499px) {
+                width: 1.25rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.react-datepicker__day--selected {
+  background-color: #ecc74c;
+}
+.react-datepicker__day--in-selecting-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__day--in-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__month-text--selected {
+  background-color: var(--theme-default);
+}
+.react-datepicker__month-text--in-selecting-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__month-text--in-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__quarter-text--selected {
+  background-color: var(--theme-default);
+}
+.react-datepicker__quarter-text--in-selecting-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__quarter-text--in-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__year-text--selected {
+  background-color: var(--theme-default);
+}
+.react-datepicker__year-text--in-selecting-range {
+  background-color: var(--theme-default);
+}
+.react-datepicker__year-text--in-range {
+  background-color: var(--theme-default);
+}
+.files-ui-dropzone-extra-1 {
+  margin-right: auto;
+  margin-left: auto;
+  padding: 50px;
+  border: 2px dashed var(--theme-default) !important;
+  border-radius: 15px !important;
+  border-image: none !important;
+  background: rgba($primary-color, 0.1);
+  box-sizing: border-box;
+  min-height: 150px !important;
+  position: relative;
+  .files-ui-dropzone-children-container {
+    margin: 25px 0;
+    padding: 0;
+    .dz-message {
+      padding: 0 !important;
+      i {
+        font-size: 50px;
+      }
+      h6 {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 0;
+        color: var(--bs-heading-color);
+        font-family: --global-font;
+      }
+      span {
+        font-weight: 400;
+        font-size: 14px;
+        color: var(--bs-card-color);
+        font-family: var(--global-font);
+      }
+    }
+  }
+}
+.react-datepicker {
+  background-color: var(--body-color);
+  [data-theme="dark"] & {
+    border-color: var(--border-color);
+  }
+}
+.react-datepicker__header {
+  [data-theme="dark"] & {
+    background-color: var(--body-color);
+    border-bottom-color: var(--border-color);
+  }
+}
+.react-datepicker-popper[data-placement^=bottom] {
+  .react-datepicker__triangle {
+    &::before {
+      [data-theme="dark"] & {
+        border-bottom-color: var(--border-color);
+      }
+    }
+    &::after {
+      [data-theme="dark"] & {
+        border-bottom-color: var(--border-color);
+      }
+    }
+  }
+}
+.react-datepicker-popper[data-placement^=top] {
+  .react-datepicker__triangle {
+    &::before {
+      [data-theme="dark"] & {
+        border-top-color: var(--border-color);
+      }
+    }
+    &::after {
+      [data-theme="dark"] & {
+        border-top-color: var(--border-color);
+      }
+    }
+  }
+}
+.react-datepicker__day-name {
+  color: var(--body-font-color);
+}
+.react-datepicker__day {
+  color: var(--body-font-color);
+}
+.react-datepicker__time-name {
+  color: var(--body-font-color);
+}
+.react-datepicker__current-month {
+  color: var(--body-font-color);
+}
+.react-datepicker-time__header {
+  color: var(--body-font-color);
+}
+.react-datepicker-year-header {
+  color: var(--body-font-color);
+}
+/**==timeline==**/
+.timeline-icon{
+  i{
+    margin-right: 10px;
+  }
+}
+.vertical-timeline-element-date{
+  padding: 0.8em 0;
+  @media only screen and (min-width: 1170px){
+    position: absolute;
+    text-align: right;
+    top: 30px;
+  }
+}
+.cd-timeline-block:nth-child(even) .vertical-timeline-element-date {
+  @media only screen and (min-width: 1170px){
+    left: auto;
+    right: 55%;
+  }
+}
+.cd-timeline-block:nth-child(odd) .vertical-timeline-element-date {
+  @media only screen and (min-width: 1170px){
+    right: auto;
+    left: 55%;
+  }
+}
+.vertical-timeline{
+  position: relative;
+  padding: 2em 0;
+  &::before {
+    background: var(--light-color);
+    height: 100%;
+    content: "";
+    position: absolute;
+    top: 0;
+    font-size: 1.5rem;
+    width: 2px;
+    left: 18px;
+    @media only screen and (min-width: 1170px){
+      left: 50% !important;
+      margin-left: -2px;
+    }
+  }
+}
+.vertical-timeline-element-content{
+  margin-left: 60px;
+  @media only screen and (min-width: 1170px){
+    margin-left: 0;
+  }
+}

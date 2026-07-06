@@ -1,0 +1,66 @@
+/* ─── WinningInfo component styles ─── */
+// @import "../Dashboard.scss";
+
+.winning-info-card {}
+
+.winners-scroll-wrap {
+  max-height: 220px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.winner-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--dash-card-2);
+  border: 1px solid var(--dash-border);
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+
+  &:hover { border-color: var(--dash-border-bright); }
+}
+
+.winner-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.winner-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.winner-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dash-text-1);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.winner-time {
+  font-size: 10px;
+  color: var(--dash-text-3);
+}
+
+.winner-amount {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dash-accent-green);
+  white-space: nowrap;
+  flex-shrink: 0;
+}

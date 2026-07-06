@@ -1,0 +1,72 @@
+// Bootstrap Scss //
+@import '../../../node_modules/bootstrap/scss/bootstrap.scss';
+@import 'font-awesome/css/font-awesome.min.css';
+
+// Carousel
+@import 'react-responsive-carousel/lib/styles/carousel.min.css';
+
+// ico icon
+@import './vendors/icofont.scss';
+
+// Leaflet
+// @import 'leaflet/dist/leaflet.css'; // ✅ Fixed
+
+// Flag icon
+@import './vendors/flag-icon.scss';
+@import 'flag-icons/css/flag-icons.min.css'; // ✅ Fixed
+
+// Themefiy Awesome
+@import './vendors/themify/themify-icons';
+
+// react-calendar
+@import 'react-calendar/dist/Calendar.css';
+
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+
+// react-image-crop
+@import 'react-image-crop/src/ReactCrop.scss';
+
+// filepond
+// @import 'filepond/dist/filepond.min.css';
+
+// react-dropzone-uploader
+@import 'react-dropzone-uploader/dist/styles.css';
+
+// Feather icons
+@import './vendors/feather-icon/feather-icon';
+
+// WeatherIcons
+@import './vendors/whether-icon.scss';
+
+// Ico Icons
+@import './vendors/icofont.scss';
+
+// react-perfect-scrollbar
+@import 'react-perfect-scrollbar/dist/css/styles.css';
+
+// react date-picker
+@import 'react-datepicker/dist/react-datepicker.css';
+
+// ReactToastify
+@import 'react-toastify/dist/ReactToastify.css'; // ✅ Fixed
+
+// react-simplemde-editor
+//@import 'easymde/dist/easymde.min.css';
+
+// react-photoswipe-gallery
+//@import 'photoswipe/dist/photoswipe.css';
+
+// react-bootstrap-typeahead
+@import 'react-bootstrap-typeahead/css/Typeahead.css';
+
+// simplebar
+@import 'simplebar-react/dist/simplebar.min.css';
+
+// slick-slider
+@import 'slick-carousel/slick/slick.css';
+@import './styles/slick/slick-theme.css';
+
+// Style Scss //
+@import './style.scss';

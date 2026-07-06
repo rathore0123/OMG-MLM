@@ -1,0 +1,470 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaEdit } from "react-icons/fa";
+import { ApiService } from "../../../../services/ApiService";
+import Swal from "sweetalert2";
+import { useCurrency } from "../../context/CurrencyContext";
+import PermissionAwareTooltip from "../Tooltip/PermissionAwareTooltip";
+import { SmartActions } from "../Security/SmartActionWithFormName";
+import AccessRestricted from "../../common/AccessRestricted";
+
+/* ================= TYPES ================= */
+
+interface PackageItem {
+    ProductId: number;
+    ProductName: string;
+    Type: string;
+    MinAmount: number;
+    MaxAmount: number;
+    Validity: number;
+    IsActive: number;
+    ShortDesprition: string;
+    DefaultImageURL?: string;
+}
+
+/* ================= COMPONENT ================= */
+
+const Template: React.FC = () => {
+    const navigate = useNavigate();
+    const { universalService } = ApiService();
+
+    const [packages, setPackages] = useState<PackageItem[]>([]);
+    const [loading, setLoading] = useState(false);
+    const IMAGE_PREVIEW_URL = import.meta.env.VITE_IMAGE_PREVIEW_URL;
+    /* Pagination */
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
+    const { currency } = useCurrency();
+    const [permissionLoading, setPermissionLoading] = useState(true);
+    const [hasPageAccess, setHasPageAccess] = useState(true);
+
+    const path = location.pathname;
+    const formName = path.split("/").pop();
+    const canAdd = SmartActions.canAdd(formName);
+    const canEdit = SmartActions.canEdit(formName);
+    // must match DB
+    const fetchFormPermissions = async () => {
+        try {
+            setPermissionLoading(true);
+
+            const saved = localStorage.getItem("EmployeeDetails");
+            const employeeId = saved ? JSON.parse(saved).EmployeeId : 0;
+
+            const payload = {
+                procName: "AssignForm",
+                Para: JSON.stringify({
+                    ActionMode: "GetForms",
+                    FormName: formName,
+                    EmployeeId: employeeId,
+                }),
+            };
+
+            const response = await universalService(payload);
+            const data = response?.data ?? response;
+
+            if (!Array.isArray(data)) {
+                setHasPageAccess(false);
+                return;
+            }
+
+            const pagePermission = data.find(
+                (p) =>
+                    String(p.FormNameWithExt).trim().toLowerCase() ===
+                    formName?.trim().toLowerCase()
+            );
+
+            if (!pagePermission || !pagePermission.Action?.trim()) {
+                setHasPageAccess(false);
+                return;
+            }
+
+            SmartActions.load(data);
+            setHasPageAccess(true);
+
+        } catch (err) {
+            console.error("Permission fetch failed", err);
+            setHasPageAccess(false);
+        } finally {
+            setPermissionLoading(false);
+        }
+    };
+
+    /* ================= FETCH PACKAGES ================= */
+
+    const fetchPackages = async () => {
+        try {
+            setLoading(true);
+
+            const payload = {
+                procName: "CreatePackage",
+                Para: JSON.stringify({
+                    ActionMode: "GetAllPackage",
+                }),
+            };
+
+            const res = await universalService(payload);
+
+            const data = res?.data || res;
+
+            if (Array.isArray(data)) {
+                setPackages(data);
+            }
+
+        } catch (err) {
+            console.error("Package fetch error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFormPermissions();
+        fetchPackages();
+    }, []);
+
+
+    const getImageUrl = (img?: string) => {
+        if (!img || img === "null" || img === "undefined") {
+            return "";
+        }
+
+        return `${IMAGE_PREVIEW_URL}${img}`;
+    };
+
+
+    /* ================= TOGGLE STATUS ================= */
+
+    const toggleStatus = async (pkg: PackageItem) => {
+        try {
+            const payload = {
+                procName: "CreatePackage",
+                Para: JSON.stringify({
+                    ActionMode: "ToggleStatus",
+                    ProductId: pkg.ProductId,
+                    EntryBy: 1,
+                }),
+            };
+
+            const res = await universalService(payload);
+            const result = res?.data?.[0] || res?.[0];
+
+            if (result?.StatusCode === 1) {
+                Swal.fire("Updated", "Status changed successfully", "success");
+                fetchPackages();
+            } else {
+                Swal.fire("Error", "Failed to update", "error");
+            }
+
+        } catch (err) {
+            console.error("Toggle error:", err);
+            Swal.fire("Error", "Server error", "error");
+        }
+    };
+
+    /* ================= PAGINATION ================= */
+
+    const indexOfLast = currentPage * itemsPerPage;
+    const indexOfFirst = indexOfLast - itemsPerPage;
+
+    const currentPackages = packages.slice(
+        indexOfFirst,
+        indexOfLast
+    );
+
+    /* ================= UI ================= */
+   if (permissionLoading) {
+  return (
+    <div className="flex items-center justify-center min-h-[400px] bg-white dark:bg-[#0c1427] rounded-md">
+      <div className="flex flex-col items-center gap-3">
+        <div className="theme-loader"></div>
+        {/* <p className="text-sm text-gray-500">
+          Loading permissions...
+        </p> */}
+        
+      </div>
+    </div>
+  );
+}
+if (!hasPageAccess) {
+  return (
+   <AccessRestricted />
+  );
+}
+
+    return (
+        <div className="trezo-card bg-white dark:bg-[#0c1427] mb-[25px] p-[20px] md:p-[25px] rounded-md">
+
+            {/* ================= HEADER ================= */}
+
+            <div className="flex items-center justify-between pb-5 border-b border-gray-200 mb-5 -mx-7 px-5">
+
+
+                <h5 className="font-bold text-xl text-black dark:text-white">
+                    Manage Packages
+                </h5>
+
+                <PermissionAwareTooltip
+                    allowed={canAdd}
+                    allowedText="Add Package"
+                    deniedText="Permission required"
+                >
+                    <button
+                        disabled={!canAdd}
+                        onClick={() => {
+                            if (!canAdd) return;
+                            navigate("/superadmin/mlm-setting/add-package");
+                        }}
+                        className="px-6 py-2 bg-primary-button-bg hover:bg-primary-button-bg-hover 
+        text-white rounded text-sm font-medium disabled:opacity-50"
+                    >
+                        Add Package
+                    </button>
+                </PermissionAwareTooltip>
+
+
+            </div>
+
+            {/* ================= CONTENT ================= */}
+
+            {loading ? (
+                <div className="min-h-[400px] flex items-center justify-center">
+                    <div className="animate-spin w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full" />
+                </div>
+            ) : (
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-[25px]">
+
+                    {currentPackages.map((pkg) => (
+
+                        <div
+                            key={pkg.ProductId}
+                            className="relative group bg-white/80 dark:bg-[#0b1220]/80
+              backdrop-blur-xl border border-primary-table-bg-hover dark:border-primary-button-bg/40
+              rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300
+              p-6 flex flex-col min-w-[280px] max-w-[320px]"
+                        >
+
+                            {/* Top Glow Line */}
+                            <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-primary-button-bg/60 to-transparent" />
+
+                            {/* Ribbon Status */}
+                            <div className="absolute top-0 right-0 z-20">
+                                <div className="relative">
+                                    <div className="absolute right-0 top-0 w-24 h-24 overflow-hidden">
+                                        <span
+                                            className={`absolute top-[22px] right-[-38px] w-40 rotate-45
+                      text-white text-[11px] font-semibold text-center py-1 shadow-md
+                      ${pkg.IsActive === 1
+                                                    ? "bg-primary-button-bg"
+                                                    : "bg-gray-500"
+                                                }`}
+                                        >
+                                            {pkg.IsActive === 1 ? "ACTIVE" : "INACTIVE"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Header */}
+                            <div
+                                className="text-lg font-semibold text-gray-900 dark:text-white 
+             tracking-tight leading-snug
+             truncate max-w-[220px]"
+                                title={pkg.ProductName}
+                            >
+                                {pkg.ProductName}
+                            </div>
+
+
+                            {/* Image */}
+                            <div className="mt-6 flex justify-center">
+
+                                <div className="w-28 h-28 rounded-2xl
+                bg-gradient-to-br from-blue-50 to-indigo-50
+                dark:from-[#111827] dark:to-[#020617]
+                p-[2px] shadow-lg">
+                                    <img
+                                        src={`${IMAGE_PREVIEW_URL}${pkg.DefaultImageURL || "DefaultPackageImage.png"}`}
+                                        alt={pkg.ProductName}
+                                        className="w-full h-full object-cover rounded-2xl bg-white"
+                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = `${import.meta.env.BASE_URL}/images/default-package.svg`.replace(/\/{2,}/g, "/");
+                                        }}
+                                    />
+
+
+
+
+
+                                </div>
+
+                            </div>
+
+                            {/* Amount */}
+                            <div className="mt-5 text-center">
+
+                                <p className="text-3xl font-bold bg-gradient-to-r
+from-primary-button-bg to-primary-button-bg bg-clip-text text-transparent">
+
+                                    {Number(pkg.MinAmount) === Number(pkg.MaxAmount)
+                                        ? `${currency.symbol}${pkg.MinAmount}`
+                                        : `${currency.symbol}${pkg.MinAmount} - ${currency.symbol}${pkg.MaxAmount}`}
+
+
+                                </p>
+
+
+                            </div>
+
+                            {/* Details */}
+                            <div className="mt-5 
+    bg-gradient-to-br from-blue-50 to-indigo-50
+    dark:from-[#0f172a] dark:to-[#020617]
+    border border-blue-100 dark:border-blue-900/40
+    rounded-2xl p-5 space-y-4 text-sm shadow-inner">
+
+                                {/* Type */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                                        <span className="text-xs uppercase tracking-wide">
+                                            Type
+                                        </span>
+                                    </div>
+
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        {pkg.Type}
+                                    </span>
+                                </div>
+
+                                {/* Divider */}
+                                <div className="h-px bg-gradient-to-r from-transparent via-primary-button-bg dark:via-primary-button-bg to-transparent" />
+
+                                {/* Validity */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                                        <span className="text-xs uppercase tracking-wide">
+                                            Validity
+                                        </span>
+                                    </div>
+
+                                    <span className="font-semibold text-gray-900 dark:text-white">
+                                        {pkg.Validity} Days
+                                    </span>
+                                </div>
+
+                            </div>
+
+
+                            {/* Actions */}
+                            <div className="mt-5 flex justify-between items-center gap-2">
+
+                                {/* Edit */}
+                                <PermissionAwareTooltip
+                                    allowed={canEdit}
+                                    allowedText="Edit Package"
+                                    deniedText="Permission required"
+                                >
+                                    <button
+                                        disabled={!canEdit}
+                                        onClick={() => {
+                                            if (!canEdit) return;
+                                            navigate(`/superadmin/package/add-package/${pkg.ProductId}`);
+                                        }}
+                                        className="flex items-center gap-1 px-3 py-1.5
+        bg-primary-button-bg hover:bg-button-bg-hover
+        text-white text-xs rounded disabled:opacity-50"
+                                    >
+                                        <FaEdit size={12} />
+                                        Edit
+                                    </button>
+                                </PermissionAwareTooltip>
+
+
+                                {/* Toggle Switch */}
+                                <div className="flex items-center gap-2">
+
+                                    <span className="text-xs text-gray-500">
+                                        {pkg.IsActive === 1 ? "Active" : "Inactive"}
+                                    </span>
+
+                                    <button
+                                        disabled={!canEdit}
+                                        onClick={() => {
+                                            if (!canEdit) return;
+                                            toggleStatus(pkg);
+                                        }}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full
+    transition-colors duration-300 focus:outline-none
+    ${pkg.IsActive === 1
+                                                ? "bg-primary-button-bg"
+                                                : "bg-gray-400"
+                                            } ${!canEdit ? "opacity-50 cursor-not-allowed" : ""}`}
+                                    >
+
+
+                                        <span
+                                            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow
+      transition-transform duration-300
+      ${pkg.IsActive === 1
+                                                    ? "translate-x-5"
+                                                    : "translate-x-1"
+                                                }`}
+                                        />
+
+                                    </button>
+
+                                </div>
+
+
+                            </div>
+
+                            {/* Footer */}
+                            <p className="mt-4 text-[11px] text-gray-400 text-center tracking-wide">
+                                {pkg.ShortDescription}
+                            </p>
+
+                        </div>
+
+                    ))}
+
+                </div>
+
+            )}
+
+            {/* ================= PAGINATION ================= */}
+
+            {packages.length > itemsPerPage && (
+
+                <div className="flex justify-center mt-8 gap-3">
+
+                    <button
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(p => p - 1)}
+                        className="px-3 py-1 border rounded disabled:opacity-50"
+                    >
+                        Prev
+                    </button>
+
+                    <span className="px-3 py-1 text-sm">
+                        Page {currentPage}
+                    </span>
+
+                    <button
+                        disabled={currentPackages.length < itemsPerPage}
+                        onClick={() => setCurrentPage(p => p + 1)}
+                        className="px-3 py-1 border rounded disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+
+                </div>
+
+            )}
+
+        </div>
+    );
+};
+
+export default Template;

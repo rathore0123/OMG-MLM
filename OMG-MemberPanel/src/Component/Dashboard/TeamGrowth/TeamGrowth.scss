@@ -1,0 +1,69 @@
+/* ─── TeamGrowth component styles ─── */
+// @import "../Dashboard.scss";
+
+.team-growth-card {
+  height: 100%;
+
+  &__hero {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  &__sub {
+    font-size: 11px;
+    color: var(--dash-text-2);
+    margin: 0 0 12px;
+  }
+}
+
+.team-count {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--dash-text-1);
+  line-height: 1;
+}
+
+.team-growth-badge {
+  background: rgba(34,197,94,0.15);
+  color: var(--dash-accent-green);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+.team-growth-chart {
+  margin-bottom: 16px;
+}
+
+.team-growth-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--dash-border);
+  padding-top: 14px;
+}
+
+.team-growth-stat {
+  flex: 1;
+  text-align: center;
+
+  &:not(:last-child) {
+    border-right: 1px solid var(--dash-border);
+  }
+
+  p {
+    font-size: 10px;
+    color: var(--dash-text-2);
+    margin: 0 0 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  h5 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dash-text-1);
+    margin: 0;
+  }
+}

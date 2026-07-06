@@ -1,0 +1,320 @@
+/* ─────────────────────────────────────────────
+   Dashboard Root — global tokens & root layout
+   ───────────────────────────────────────────── */
+
+/* Design Tokens */
+:root {
+  --dash-bg: var(--body-bg);
+  --dash-card: var(--card-bg);
+  --dash-card-2: var(--card-bg), 0.8;
+  --dash-border: var(--card-border-color);
+  --dash-border-bright: var(--card-border-color);
+  --dash-primary: #7c5cfc;
+  --dash-primary-2: #6c4fe0;
+  --dash-accent-green: #22c55e;
+  --dash-accent-red: #ef4444;
+  --dash-accent-amber: #f59e0b;
+  --dash-accent-blue: #3b82f6;
+  --dash-text-1: var(--card-text-color);
+  --dash-text-2: #8b949e;
+  --dash-text-3: #6e7681;
+  --dash-radius: 14px;
+  --dash-radius-sm: 8px;
+  --dash-shadow: 0px 4px 15px rgb(0 0 0 / 10%);
+  --dash-glow-purple: 0 0 20px rgba(124, 92, 252, 0.25);
+}
+
+.dashboard-root {
+  background: var(--dash-bg);
+  min-height: 100vh;
+  color: var(--dash-text-1);
+}
+
+/* ── Stat Cards ── */
+.stat-cards-row {
+}
+
+.stat-card {
+  position: relative;
+  border-radius: 7px;
+  padding: 6px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  /* 🔥 INNER GLOW */
+  box-shadow:
+    inset 0 0 40px rgba(255, 255, 255, 0.03),
+    inset 0 0 80px rgba(0, 0, 0, 0.6);
+
+  transition: all 0.25s ease;
+}
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  opacity: 0.4;
+}
+.stat-card::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -20%;
+  width: 140%;
+  height: 100%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.12),
+    transparent 60%
+  );
+  opacity: 0.2;
+  pointer-events: none;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ICON BOX */
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: white;
+}
+
+/* TEXT */
+.stat-card__label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.stat-card__value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--card-text-color);
+  margin: 6px 0;
+}
+
+.stat-card__change {
+  font-size: 12px;
+  color: #22c55e;
+}
+
+/* GRAPH LINE */
+.stat-card__graph {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2));
+  mask-image: url("https://svgshare.com/i/13kA.svg");
+  mask-size: cover;
+  opacity: 0.6;
+}
+
+/* 🎨 COLOR VARIANTS */
+
+.stat-card.blue {
+  box-shadow: var(--glow-blue);
+  .stat-card__icon {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+}
+.stat-card.blue .stat-card__graph {
+  background: linear-gradient(to right, transparent, #3b82f6);
+}
+
+.stat-card.purple {
+  box-shadow: var(--glow-purple);
+  .stat-card__icon {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  }
+}
+.stat-card.purple .stat-card__graph {
+  background: linear-gradient(to right, transparent, #8b5cf6);
+}
+
+.stat-card.green {
+  box-shadow: var(--glow-green);
+  .stat-card__icon {
+    background: linear-gradient(135deg, #22c55e, #15803d);
+  }
+}
+.stat-card.green .stat-card__graph {
+  background: linear-gradient(to right, transparent, #22c55e);
+}
+
+.stat-card.orange {
+  box-shadow: var(--glow-orange);
+  .stat-card__icon {
+    background: linear-gradient(135deg, #f97316, #c2410c);
+  }
+}
+.stat-card.orange .stat-card__graph {
+  background: linear-gradient(to right, transparent, #f97316);
+}
+
+/* ── Shared card shell ── */
+.dash-card {
+  background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--dash-radius);
+  padding: 18px;
+  margin-bottom: 18px;
+  .remaining-card {
+    padding: 14px 16px;
+    margin: 0;
+  }
+}
+
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h5 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dash-text-1);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  a,
+  button {
+    font-size: 11px;
+    color: var(--dash-primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* ── Shared button ── */
+.btn-primary-dash {
+  background: linear-gradient(
+    135deg,
+    var(--dash-primary),
+    var(--dash-primary-2)
+  );
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+/* ── Modals ── */
+.dashboard-modal {
+  .modal-content {
+    background: var(--dash-card-2);
+    border: 1px solid var(--dash-border-bright);
+    border-radius: var(--dash-radius);
+    color: var(--dash-text-1);
+  }
+}
+
+.modal-header-dark {
+  background: var(--dash-card);
+  border-bottom: 1px solid var(--dash-border);
+  color: var(--dash-text-1);
+
+  .btn-close {
+    filter: invert(1);
+  }
+}
+
+.modal-body-dark {
+  background: var(--dash-card-2);
+  color: var(--dash-text-1);
+}
+
+.kyc-modal-content {
+  p {
+    color: var(--dash-text-2);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  h5 {
+    color: var(--dash-text-1);
+    margin: 12px 0 6px;
+  }
+  ul {
+    color: var(--dash-text-2);
+    font-size: 13px;
+    padding-left: 18px;
+    li {
+      margin-bottom: 4px;
+    }
+  }
+}
+
+/* ── Scrollbar ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dash-card-2) transparent;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--dash-card-2);
+  border-radius: 3px;
+}
+
+@import "../../../../src/Component/Dashboard/AccountOverview/AccountOverview.scss";
+@import "../../../../src/Component/Dashboard/EarningsChart/EarningsChart.scss";
+@import "../../../../src/Component/Dashboard/Incomes/Incomes.scss";
+@import "../../../../src/Component/Dashboard/OtherWallet/WalletCard.scss";
+@import "../../../../src/Component/Dashboard/ProfileGreet/Profile.scss";
+@import "../../../../src/Component/Dashboard/QuickActions/QuickActions.scss";
+@import "../../../../src/Component/Dashboard/RecentActivity/RecentActivity.scss";
+@import "../../../../src/Component/Dashboard/RecentTransection/TransectionContainer.scss";
+@import "../../../../src/Component/Dashboard/TeamGrowth/TeamGrowth.scss";
+@import "../../../../src/Component/Dashboard/WinningInfo/WinningInfo.scss";

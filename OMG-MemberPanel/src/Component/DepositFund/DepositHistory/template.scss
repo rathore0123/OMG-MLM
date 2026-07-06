@@ -1,0 +1,169 @@
+.trezo-card {
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+    margin-bottom: 20px;
+  }
+
+  &-title h5 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  &-content {
+       overflow: hidden;
+    background: #ffffff;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 14px rgba(30, 40, 80, 0.07);
+  }
+}
+
+/* HEADER */
+.header-actions {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.filter-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* DROPDOWN */
+.filter-dropdown {
+  position: relative;
+
+  select {
+    padding-left: 30px;
+  }
+}
+
+/* SEARCH */
+.search-box {
+  position: relative;
+  background: #000000;
+
+  input {
+    height: 37px;
+    padding-left: 30px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+}
+
+/* ICONS */
+.icon-left {
+  position: absolute;
+  left: 8px;
+  top: 70%;
+  transform: translateY(-50%);
+  i {
+    color: #999;
+    font-size: 19px;
+  }
+}
+
+.icon-right {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* BUTTONS */
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  border-radius: 6px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  &.primary {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  &.reset {
+    border-color: #999;
+    color: #555;
+
+    &:hover {
+      background: #eee;
+    }
+  }
+}
+
+/* TABLE TOOLBAR */
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* PAGE SIZE */
+.page-size {
+  position: relative;
+
+  select {
+    height: 32px;
+    padding: 0 25px 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+}
+
+/* EXPORT */
+.export-wrapper.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* LOADER */
+.table-loader {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+
+  .loader-left {
+    height: 32px;
+    width: 120px;
+    background: #e5e7eb;
+    border-radius: 6px;
+  }
+
+  .loader-right {
+    display: flex;
+    gap: 8px;
+
+    div {
+      width: 60px;
+      height: 32px;
+      background: #e5e7eb;
+      border-radius: 6px;
+    }
+  }
+}
