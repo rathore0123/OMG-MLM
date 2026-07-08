@@ -6,7 +6,7 @@ export interface P2PPropType {
 }
 // Create initial values based on the LoginFormPropsType interface
 export const P2PForminitialValues: P2PPropType = {
-    WalletType: "CommissionWallet",
+    WalletType: "ProductWallet",
     TransferAmount: "",
     ToUsername:localStorage.getItem("UserName") as string,
     OTP: "",

@@ -540,39 +540,7 @@ const USDTTRC20PageContainer = () => {
                           </FormGroup>
                         </Col>
 
-                        {/* USDT — auto-filled */}
-                        <Col md="6">
-                          <FormGroup className="deposit-form-group">
-                            <Label>
-                              Equivalent USDT
-                              {usdtLoading && (
-                                <span className="df-usdt-loader">
-                                  <i className="fa fa-circle-o-notch fa-spin" />{" "}
-                                  calculating…
-                                </span>
-                              )}
-                            </Label>
-                            <div className="deposit-input-wrap">
-                              <span className="wf-sel-prefix-icon">
-                                <FiDollarSign />
-                              </span>
-                              <div className="df-usdt-wrap">
-                                <Field
-                                  type="text"
-                                  name="USDTAmount"
-                                  placeholder={
-                                    usdtLoading
-                                      ? "Calculating…"
-                                      : "Auto-calculated on blur"
-                                  }
-                                  className="deposit-input"
-                                  disabled
-                                />
-                                <span className="df-usdt-badge">USDT</span>
-                              </div>
-                            </div>
-                          </FormGroup>
-                        </Col>
+                       
                       </Row>
                     </div>
 
