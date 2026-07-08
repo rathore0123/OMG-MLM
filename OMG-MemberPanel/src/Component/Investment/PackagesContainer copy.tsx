@@ -522,7 +522,7 @@ const PackageContainer = () => {
               <div className="pricing-box">
                 <div className="icon">
                   <img
-                    src="/portal/assets/images/packagelogo.png"
+                    src="/assets/images/packagelogo.png"
                     alt={plan.PackageImage}
                   />
                 </div>

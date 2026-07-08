@@ -66,7 +66,7 @@ api.interceptors.response.use(
 
       clearMemberSession();
       sessionStorage.clear();
-      window.location.href = "/portal/login";
+      window.location.href = "/member/loginauth";
     }
 
     return Promise.reject(error);

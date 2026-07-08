@@ -312,7 +312,7 @@ const ProfilePage: React.FC = () => {
                     </p>
                     <span
                       className="help-link"
-                      onClick={() => navigate("/portal/supportticket")}
+                      onClick={() => navigate("/member/supportticket")}
                     >
                       Support Ticket
                     </span>

@@ -70,7 +70,7 @@ const Template: React.FC = () => {
       color: "var(--card-bg)",
       icon: "✏️",
       isGrad: true,
-      click: () => naviagte("/portal/add-fund-inr"),
+      click: () => naviagte("/member/add-fund-inr"),
     },
 
     {
@@ -159,7 +159,7 @@ const Template: React.FC = () => {
       if (Array.isArray(data)) {
 
 
-        
+
         const reactCols = data
           .filter((c: any) => c.IsVisible === true)
           .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
@@ -194,8 +194,8 @@ const Template: React.FC = () => {
               // ⭐ NORMAL ROW
               const value = row[c.ColumnKey];
               if (c.ColumnKey === "Status") {
-              return <StatusBadge status={value} />;
-            }
+                return <StatusBadge status={value} />;
+              }
 
               if (typeof value === "string" && value.includes("<")) {
                 return <span dangerouslySetInnerHTML={{ __html: value }} />;

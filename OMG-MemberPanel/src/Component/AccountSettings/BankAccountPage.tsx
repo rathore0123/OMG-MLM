@@ -34,13 +34,13 @@ const BorderTabContent = () => {
   const navigate = useNavigate();
 
   // ── OTP State ──────────────────────────────────────────────────────────────
-  const [isOtpSent, setIsOtpSent]   = useState(false);
-  const [otpTimer, setOtpTimer]     = useState<number>(0);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [otpTimer, setOtpTimer] = useState<number>(0);
   const [disablebtn, setDisablebtn] = useState(false);
 
   // ── Services ───────────────────────────────────────────────────────────────
   const { universalService, loading } = ApiService();
-  const { FormatTime }                = SendOTP_Service();
+  const { FormatTime } = SendOTP_Service();
   const { showAlert, ShowSuccessAlert } = useSweetAlert();
 
   // ── Auth ───────────────────────────────────────────────────────────────────
@@ -49,9 +49,9 @@ const BorderTabContent = () => {
   );
 
   // ── UI State ───────────────────────────────────────────────────────────────
-  const [BankINRValues, setBankINRValues]       = useState<any>(null);
-  const [profileInfo, setProfileInfo]           = useState<any>({});
-  const [imagePreview, setImagePreview]         = useState<string | null>(null);
+  const [BankINRValues, setBankINRValues] = useState<any>(null);
+  const [profileInfo, setProfileInfo] = useState<any>({});
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
   const [spinner, setSpinner] = useState({ FormName: "bankINR", Action: false });
 
@@ -85,23 +85,23 @@ const BorderTabContent = () => {
 
   const GetBankDetails = async () => {
     const param = { ClientId: ClientID, ActionMode: "GetBankDetails" };
-    const obj   = { procName: "MemberAccountSetting", Para: JSON.stringify(param) };
-    const res   = await universalService(obj);
+    const obj = { procName: "MemberAccountSetting", Para: JSON.stringify(param) };
+    const res = await universalService(obj);
     setBankINRValues({
-      IFSC:              res[0]?.IFSC              ?? "",
-      BankName:          res[0]?.BankName          ?? "",
-      BranchName:        res[0]?.BranchName        ?? "",
-      AccountNo:         res[0]?.AccountNo         ?? "",
+      IFSC: res[0]?.IFSC ?? "",
+      BankName: res[0]?.BankName ?? "",
+      BranchName: res[0]?.BranchName ?? "",
+      AccountNo: res[0]?.AccountNo ?? "",
       AccountHolderName: res[0]?.AccountHolderName ?? "",
-      OTP:               "",
+      OTP: "",
     });
   };
 
   const Get_MyProfileData = async () => {
     const param = { ClientId: ClientID, ActionMode: "GetProfile" };
-    const obj   = { procName: "MemberProfile", Para: JSON.stringify(param) };
-    const res   = await universalService(obj);
-    const data  = res?.[0] ?? {};
+    const obj = { procName: "MemberProfile", Para: JSON.stringify(param) };
+    const res = await universalService(obj);
+    const data = res?.[0] ?? {};
     setProfileInfo(data);
     if (data?.ClientLogo) {
       setImagePreview(
@@ -112,20 +112,20 @@ const BorderTabContent = () => {
   };
 
   // ── Derived profile display values ─────────────────────────────────────────
-  const fullName    = [profileInfo?.FirstName, profileInfo?.LastName].filter(Boolean).join(" ") || "User";
-  const uid         = profileInfo?.Username   ?? "—";
+  const fullName = [profileInfo?.FirstName, profileInfo?.LastName].filter(Boolean).join(" ") || "User";
+  const uid = profileInfo?.Username ?? "—";
   const memberSince = profileInfo?.MemberSince ?? "—";
-  const lastLogin   = profileInfo?.LastLogin
+  const lastLogin = profileInfo?.LastLogin
     ? new Date(profileInfo.LastLogin).toLocaleString("en-GB", {
-        day: "2-digit", month: "short", year: "numeric",
-        hour: "2-digit", minute: "2-digit", hour12: true,
-      })
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: true,
+    })
     : new Date().toLocaleString("en-GB", {
-        day: "2-digit", month: "short", year: "numeric",
-        hour: "2-digit", minute: "2-digit", hour12: true,
-      });
-  const email  = profileInfo?.EmailId   ?? "—";
-  const phone  = profileInfo?.ContactNo ?? "—";
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: true,
+    });
+  const email = profileInfo?.EmailId ?? "—";
+  const phone = profileInfo?.ContactNo ?? "—";
   const status = profileInfo?.MemberStatus ?? "—";
 
   // ── OTP Handlers ───────────────────────────────────────────────────────────
@@ -220,14 +220,14 @@ const BorderTabContent = () => {
 
   const Update_BankINR = async (values: Bank_INRpropsType, setFieldValue: (f: string, v: string) => void) => {
     const confirmResult = await Swal.fire({
-      title:             "Update Bank Details?",
-      text:              "Are you sure you want to update bank information?",
-      icon:              "question",
-      showCancelButton:  true,
+      title: "Update Bank Details?",
+      text: "Are you sure you want to update bank information?",
+      icon: "question",
+      showCancelButton: true,
       confirmButtonText: "Yes, Update",
-      cancelButtonText:  "Cancel",
+      cancelButtonText: "Cancel",
       confirmButtonColor: "#3085d6",
-      cancelButtonColor:  "#d33",
+      cancelButtonColor: "#d33",
     });
     if (!confirmResult.isConfirmed) return;
 
@@ -345,7 +345,7 @@ const BorderTabContent = () => {
                       </p>
                       <span
                         className="bank-help-link"
-                        onClick={() => navigate("/portal/supportticket")}
+                        onClick={() => navigate("/member/supportticket")}
                       >
                         Support Ticket
                       </span>
@@ -515,10 +515,10 @@ const BorderTabContent = () => {
                           !values.AccountNo?.trim() ||
                           !values.BranchName?.trim() ||
                           !values.AccountHolderName?.trim()) && (
-                          <p className="bank-otp-hint">
-                            ⚠️ Fill all bank details above to enable OTP.
-                          </p>
-                        )}
+                            <p className="bank-otp-hint">
+                              ⚠️ Fill all bank details above to enable OTP.
+                            </p>
+                          )}
 
                         {/* Countdown once OTP is sent */}
                         {isOtpSent && (

@@ -817,7 +817,7 @@ const WalletTransferFxstPayPageContainer = () => {
   const handleReceiptClose = () => {
     setShowReceipt(false);
     setReceipt(null);
-    navigate("/portal/WithdrawHistory");
+    navigate("/member/WithdrawHistory");
   };
 
   const truncateAddress = (address: string) => {

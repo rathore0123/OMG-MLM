@@ -1,6 +1,6 @@
 {
   "name": "bdgcoin",
-  "homepage": "/portal/",
+  "homepage": "/member/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

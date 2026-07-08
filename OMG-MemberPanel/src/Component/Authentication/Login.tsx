@@ -168,7 +168,7 @@ const Login = () => {
                                   />
                     {/* <Image
                       className="img-fluid for-dark"
-                      src="/portal/assets/images/logo/GoldenLogo.png"
+                      src="/member/assets/images/logo/GoldenLogo.png"
                       style={{ height: "60px", margin: "auto" }}
                       alt="darkLogo"
                     /> */}

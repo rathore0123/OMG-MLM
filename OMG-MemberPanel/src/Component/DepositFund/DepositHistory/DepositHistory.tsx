@@ -106,7 +106,7 @@ const Template: React.FC = () => {
       color: "var(--card-bg)",
       icon: "✏️",
       isGrad: true,
-      click: () => navigate("/portal/bep20"),
+      click: () => navigate("/member/bep20"),
     },
 
     {

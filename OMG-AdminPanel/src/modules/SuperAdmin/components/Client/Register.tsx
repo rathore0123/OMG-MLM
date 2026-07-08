@@ -731,7 +731,7 @@ export default function MLMRegisterPage() {
                 <ImageUploaderWithCropper
                   imageUrl={
                     profilePic
-                      ? `${import.meta.env.VITE_IMAGE_PREVIEW_URL}${profilePic}`
+                      ? `${import.meta.env.VITE_IMAGE_PREVIEW_URL}employeedocuments/${profilePic}`
                       : undefined
                   }
                   previewImage={previewImage}

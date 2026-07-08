@@ -105,7 +105,7 @@ const Template: React.FC = () => {
       color: "var(--card-bg)",
       icon: "✏️",
       isGrad: true,
-      click: () => navigate("/portal/add-fund-inr"),
+      click: () => navigate("/member/add-fund-inr"),
     },
     {
       key: "TotalAmount",
