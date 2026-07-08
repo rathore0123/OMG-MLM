@@ -223,7 +223,7 @@ const Template: React.FC = () => {
                   const value = row[c.ColumnKey] || 0;
 
                   return c.IsCurrency
-                    ? `$${Number(value).toLocaleString()}`
+                    ? `${currency.symbol}${Number(value).toLocaleString()}`
                     : Number(value).toLocaleString();
                 }
 
@@ -234,7 +234,7 @@ const Template: React.FC = () => {
               const value = row[c.ColumnKey];
 
               if (c.IsCurrency && value != null) {
-                return `$${Number(value).toLocaleString()}`;
+                return `${currency.symbol}${Number(value).toLocaleString()}`;
               }
 
               return value ?? "-";

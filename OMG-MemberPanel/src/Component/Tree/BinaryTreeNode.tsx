@@ -155,10 +155,10 @@ export default class BinaryTreeNode extends React.Component<BinaryTreeNodeProps>
               <div className={`distributor-wrap ${user.id && user.id !== "null" ? (user.paidstatus === "Paid" ? "paid" : "unpaid") : ""}`}>
                 <div className="avatar">
                   <img
-                    src={`${imageBaseUrl}/employeedocuments/${user.image}`}
+                    src={`${imageBaseUrl}ClientImages/${user.image}`}
                     alt="User"
                     onError={(e: any) => {
-                      e.target.src = `${imageBaseUrl}/employeedocuments/plus.png`;
+                      e.currentTarget.src = `${imageBaseUrl}employeedocuments/${user.image}`;
                     }}
                   />
                 </div>

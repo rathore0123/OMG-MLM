@@ -25,7 +25,7 @@ import { decryptData } from "@/utils/helper/Crypto";
 import { useCurrency } from "../../Context/CurrencyContext";
 import { GiWallet } from "react-icons/gi";
 import { ResponsiveContainer, AreaChart, Area } from "recharts";
-import { FaCopy, FaCheck } from "react-icons/fa";
+import { FaCopy, FaCheck, FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -158,6 +158,9 @@ const ContainerDashboard = () => {
 
   const IMAGE_PREVIEW_URL = import.meta.env.VITE_IMAGE_PREVIEW_URL ?? "";
   const REGISTRATION_URL = window.location.origin + "/member/register";
+
+  /* ── APK download link ── */
+  const APK_DOWNLOAD_URL = "assets/OMG.apk";
 
   /* ──────────────── Safe decryption helper ──────────────── */
   const safeDecrypt = (encryptedData: string | null): string => {
@@ -313,32 +316,32 @@ const ContainerDashboard = () => {
 
   const recentWinners = recentDirects.length
     ? recentDirects.map((d) => ({
-        name: d.ClientName?.trim() ?? d.UserName,
-        time: d.RegistrationDate,
-        amount: `+${currency.symbol}${Number(d.InvestmentAmount ?? 0).toFixed(2)}`,
-      }))
+      name: d.ClientName?.trim() ?? d.UserName,
+      time: d.RegistrationDate,
+      amount: `+${currency.symbol}${Number(d.InvestmentAmount ?? 0).toFixed(2)}`,
+    }))
     : [
-        {
-          name: "Mem***ZED",
-          time: "2 minutes ago",
-          amount: `+${currency.symbol}260.00`,
-        },
-        {
-          name: "Mem***JAX",
-          time: "5 minutes ago",
-          amount: `+${currency.symbol}325.00`,
-        },
-        {
-          name: "Mem***FSA",
-          time: "12 minutes ago",
-          amount: `+${currency.symbol}194.00`,
-        },
-        {
-          name: "Mem***SYC",
-          time: "18 minutes ago",
-          amount: `+${currency.symbol}111.20`,
-        },
-      ];
+      {
+        name: "Mem***ZED",
+        time: "2 minutes ago",
+        amount: `+${currency.symbol}260.00`,
+      },
+      {
+        name: "Mem***JAX",
+        time: "5 minutes ago",
+        amount: `+${currency.symbol}325.00`,
+      },
+      {
+        name: "Mem***FSA",
+        time: "12 minutes ago",
+        amount: `+${currency.symbol}194.00`,
+      },
+      {
+        name: "Mem***SYC",
+        time: "18 minutes ago",
+        amount: `+${currency.symbol}111.20`,
+      },
+    ];
 
   const walletBalance = fmt(dashData?.CommissionWallet ?? 0);
   const totalEarnings = fmt(dashData?.ROIWallet ?? 0);
@@ -368,6 +371,23 @@ const ContainerDashboard = () => {
     <>
       <Breadcrumbs mainTitle="Dashboard" parent="Dashboard" />
       <Container fluid className="dashboard-container">
+        {/* ── APK Download Banner (responsive) ── */}
+        <div className="apk-download-banner">
+          <div className="apk-download-content">
+            <div className="apk-download-icon">
+              <FaDownload />
+            </div>
+            <div className="apk-download-text">
+              <h5>Get the Mobile App</h5>
+              <span>Download our Android APK for faster access</span>
+            </div>
+          </div>
+          <a href={APK_DOWNLOAD_URL} download className="btn-apk-download">
+            <FaDownload />
+            <span>Download APK</span>
+          </a>
+        </div>
+
         <div className="dashboard-root">
           {/* ── Referral Link Boxes with Vibrant Theme Colors (No Open Button) ── */}
           {getSponsorId() && (
@@ -458,35 +478,35 @@ const ContainerDashboard = () => {
               change: string;
               color: CardColor;
             }[] = [
-              {
-                icon: <IoMdWallet />,
-                label: "Wallet Balance",
-                value: fmt(dashData?.CommissionWallet ?? 0),
-                change: "Commission wallet",
-                color: "green",
-              },
-              {
-                icon: <IoWallet />,
-                label: "Deposit Wallet",
-                value: fmt(dashData?.ProductWallet ?? 0),
-                change: "Product wallet balance",
-                color: "blue",
-              },
-              {
-                icon: <GrMoney />,
-                label: "Total Earnings",
-                value: fmt(dashData?.TotalEarning ?? 0),
-                change: "Total earnings",
-                color: "orange",
-              },
-              {
-                icon: <BiMoneyWithdraw />,
-                label: "Total Withdrawal",
-                value: fmt(dashData?.WithdrawalAmount ?? 0),
-                change: "Lifetime withdrawals",
-                color: "purple",
-              },
-            ];
+                {
+                  icon: <IoMdWallet />,
+                  label: "Wallet Balance",
+                  value: fmt(dashData?.CommissionWallet ?? 0),
+                  change: "Commission wallet",
+                  color: "green",
+                },
+                {
+                  icon: <IoWallet />,
+                  label: "Deposit Wallet",
+                  value: fmt(dashData?.ProductWallet ?? 0),
+                  change: "Product wallet balance",
+                  color: "blue",
+                },
+                {
+                  icon: <GrMoney />,
+                  label: "Total Earnings",
+                  value: fmt(dashData?.TotalEarning ?? 0),
+                  change: "Total earnings",
+                  color: "orange",
+                },
+                {
+                  icon: <BiMoneyWithdraw />,
+                  label: "Total Withdrawal",
+                  value: fmt(dashData?.WithdrawalAmount ?? 0),
+                  change: "Lifetime withdrawals",
+                  color: "purple",
+                },
+              ];
             return (
               <Row className="stat-cards-row g-3 mb-4">
                 {walletCards.map((card, i) => (
@@ -787,7 +807,7 @@ const ContainerDashboard = () => {
                     Math.round(
                       ((dashData?.PrevLeftCF ?? 0) /
                         Math.max(dashData?.TotalPrevCF ?? 1, 1)) *
-                        100,
+                      100,
                     ),
                     "LEFT",
                     "RIGHT",
@@ -811,7 +831,7 @@ const ContainerDashboard = () => {
                     Math.round(
                       ((dashData?.CurrentLeftBV ?? 0) /
                         Math.max((dashData?.TotalCurrentBV ?? 0) || 1, 1)) *
-                        100,
+                      100,
                     ),
                     "LEFT",
                     "RIGHT",
@@ -826,8 +846,8 @@ const ContainerDashboard = () => {
             {/* ── Left / Centre column ── */}
             <Col xl="9" lg="8" md="12">
               <WalletProfileCard />
-              
-             <WalletCard walletData={dashData} />
+
+              <WalletCard walletData={dashData} />
 
               <Row className="g-3 mt-0">
                 <Col xl="7" md="7" sm="12">
@@ -948,6 +968,109 @@ const ContainerDashboard = () => {
 
       {/* CSS styles - Vibrant theme colors for referral cards (Updated for single button) */}
       <style>{`
+        .apk-download-banner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+          border-radius: 14px;
+          padding: 16px 20px;
+          margin-bottom: 20px;
+          box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
+          flex-wrap: wrap;
+        }
+
+        .apk-download-content {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          min-width: 0;
+        }
+
+        .apk-download-icon {
+          width: 42px;
+          height: 42px;
+          min-width: 42px;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 20px;
+        }
+
+        .apk-download-text h5 {
+          margin: 0;
+          color: #fff;
+          font-size: 1rem;
+          font-weight: 700;
+        }
+
+        .apk-download-text span {
+          color: rgba(255, 255, 255, 0.85);
+          font-size: 0.8rem;
+        }
+
+        .btn-apk-download {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          background: #fff;
+          color: #5b21b6;
+          font-weight: 700;
+          font-size: 0.85rem;
+          padding: 10px 20px;
+          border-radius: 8px;
+          text-decoration: none;
+          white-space: nowrap;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .btn-apk-download:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+          color: #5b21b6;
+        }
+
+        /* Tablet */
+        @media (max-width: 768px) {
+          .apk-download-banner {
+            padding: 14px 16px;
+          }
+
+          .apk-download-text h5 {
+            font-size: 0.9rem;
+          }
+
+          .apk-download-text span {
+            font-size: 0.75rem;
+          }
+        }
+
+        /* Mobile: stack full-width, button becomes full-width */
+        @media (max-width: 576px) {
+          .apk-download-banner {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+          }
+
+          .apk-download-content {
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .btn-apk-download {
+            width: 100%;
+            padding: 12px;
+          }
+        }
+
         .referral-card {
           border-radius: 12px;
           padding: 12px 16px;
