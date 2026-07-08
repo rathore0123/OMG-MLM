@@ -32,6 +32,7 @@ import { FaRupeeSign } from "react-icons/fa6";
 const P2PTransfer = () => {
   useEffect(() => {
     GetWithdrawalEntityType();
+    GetTransferSettings();
     setUsername(localStorage.getItem("MemberName") as string);
   }, []);
   const { getWalletBalance, doTransfer, loading, validateSponsor } =
@@ -41,7 +42,7 @@ const P2PTransfer = () => {
     decryptData(localStorage.getItem("clientId") as string),
   );
   const [walletType, setWalletType] = useState("");
-  const { SendOTP, FormatTime } = SendOTP_Service();
+  const { FormatTime } = SendOTP_Service();
   const [OTPtimer, setOTPtimer] = useState("TransferForm");
   const [disablebtn, setdisablebtn] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
@@ -50,11 +51,25 @@ const P2PTransfer = () => {
   const [fxstwalletBalance, setfxstwalletBalance] = useState<number>(0);
   const [username, setUsername] = useState("");
   const [wallets, setwalletType] = useState<any>([]);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [transferSettings, setTransferSettings] = useState({
+    MinimumTransferAmount: 0,
+    MaximumTransferAmount: 0,
+    TransferCharge: 0,
+    TransferStatus: true,
+  });
   // Validation schema
   const TransferSchema = Yup.object().shape({
     WalletType: Yup.string().required("Select Wallet Type"),
     TransferAmount: Yup.number()
-      .min(1, "Minimum Transfer amount is Rs.1")
+      .min(
+        transferSettings.MinimumTransferAmount || 1,
+        `Minimum Transfer amount is Rs.${transferSettings.MinimumTransferAmount || 1}`,
+      )
+      .max(
+        transferSettings.MaximumTransferAmount || Number.MAX_SAFE_INTEGER,
+        `Maximum Transfer amount is Rs.${transferSettings.MaximumTransferAmount}`,
+      )
       .required("Enter Transfer Amount"),
     ToUsername: Yup.string().required("Enter To Username"),
     OTP: Yup.string().required("Enter OTP"),
@@ -88,7 +103,7 @@ const P2PTransfer = () => {
       procName: "SendOTP",
       Para: JSON.stringify(param),
     };
-    const res = await SendOTP(obj);
+    const res = await getWalletBalance(obj);
     if (res[0].StatusCode == "1") {
       setIsOtpSent(true);
       // setOtpTimer(res[0].SecondsLeft - 1)
@@ -171,8 +186,33 @@ const P2PTransfer = () => {
       Para: JSON.stringify(param),
     };
     const res = await getWalletBalance(obj);
-    console.log(res);
     setwalletType(res);
+    const defaultWallet =
+      res.find((w: any) => w.WalletValue === P2PForminitialValues.WalletType) ||
+      res[0];
+    if (defaultWallet) {
+      setWalletType(defaultWallet.WalletValue);
+      setwalletBalance(defaultWallet.Balance);
+    }
+  };
+  const GetTransferSettings = async () => {
+    const param = {
+      ActionMode: "GetTransferSettings",
+    };
+    const obj = {
+      procName: "P2PTransfer",
+      Para: JSON.stringify(param),
+    };
+    const res = await getWalletBalance(obj);
+    if (res && res[0]) {
+      setTransferSettings({
+        MinimumTransferAmount: Number(res[0].MinimumTransferAmount) || 0,
+        MaximumTransferAmount: Number(res[0].MaximumTransferAmount) || 0,
+        TransferCharge: Number(res[0].TransferCharge) || 0,
+        TransferStatus: !!res[0].TransferStatus,
+      });
+    }
+    setSettingsLoaded(true);
   };
   return (
     <>
@@ -201,10 +241,23 @@ const P2PTransfer = () => {
 
                 {/* Info */}
                 <div className="wallet-info">
-                  <p>• Minimum transfer amount: Rs.50</p>
-                  <p>• 0% transaction fee</p>
+                  <p>
+                    • Minimum transfer amount: Rs.
+                    {transferSettings.MinimumTransferAmount}
+                  </p>
+                  <p>
+                    • Maximum transfer amount: Rs.
+                    {transferSettings.MaximumTransferAmount}
+                  </p>
+                  <p>• {transferSettings.TransferCharge}% transaction fee</p>
                   <p>• Instant transfer</p>
                 </div>
+
+                {settingsLoaded && !transferSettings.TransferStatus && (
+                  <div className="username-error mt-2">
+                    ⚠️ P2P Transfer is currently disabled by Admin
+                  </div>
+                )}
 
                 {/* Highlight */}
                 <div className="wallet-highlight">
@@ -225,7 +278,7 @@ const P2PTransfer = () => {
               <CardBody className="p2p-transfer-card">
                 <div className="p2p-header mb-4">
                   <h3>Send Money Instantly</h3>
-                  <p>Transfer funds securely with zero transaction fees</p>
+                  <p>Transfer funds securely to another member's Deposit Wallet</p>
                 </div>
 
                 <div className="gap-3 pills-blogger">
@@ -282,7 +335,7 @@ const P2PTransfer = () => {
                                 <Field
                                   type="number"
                                   name="TransferAmount"
-                                  placeholder="Minimum Rs.50"
+                                  placeholder={`Min Rs.${transferSettings.MinimumTransferAmount} - Max Rs.${transferSettings.MaximumTransferAmount}`}
                                   className="st-filter-input modern-input"
                                 />
                               </div>
@@ -368,8 +421,34 @@ const P2PTransfer = () => {
                                 <strong>{values.ToUsername || "-"}</strong>
                               </div>
                               <div className="summary-row">
-                                <span>Fee:</span>
-                                <strong>Rs.0</strong>
+                                <span>Fee ({transferSettings.TransferCharge}%):</span>
+                                <strong>
+                                  Rs.
+                                  {(
+                                    Math.round(
+                                      (((Number(values.TransferAmount) || 0) *
+                                        transferSettings.TransferCharge) /
+                                        100) *
+                                        100,
+                                    ) / 100
+                                  ).toFixed(2)}
+                                </strong>
+                              </div>
+                              <div className="summary-row">
+                                <span>You'll Receive:</span>
+                                <strong>
+                                  Rs.
+                                  {(
+                                    (Number(values.TransferAmount) || 0) -
+                                    Math.round(
+                                      (((Number(values.TransferAmount) || 0) *
+                                        transferSettings.TransferCharge) /
+                                        100) *
+                                        100,
+                                    ) /
+                                      100
+                                  ).toFixed(2)}
+                                </strong>
                               </div>
                             </div>
                           </Col>
@@ -377,8 +456,11 @@ const P2PTransfer = () => {
                           {/* Submit */}
                           <div className="mt-3 d-flex justify-content-end">
                             <button
-                              className="btn form-btn"
-                              disabled={isSubmitting}
+                              className="btn submit-btn"
+                              disabled={
+                                isSubmitting ||
+                                (settingsLoaded && !transferSettings.TransferStatus)
+                              }
                             >
                               Transfer Now
                             </button>

@@ -149,10 +149,17 @@
     font-weight: 600;
     transition: 0.3s;
 
-    &:hover {
+    &:hover:not(:disabled) {
       opacity: 0.9;
       transform: translateY(-1px);
       color: var(--btn-text-color);
+    }
+
+    &:disabled {
+      background: var(--btn-bg);
+      color: var(--btn-text-color);
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   }
 }
