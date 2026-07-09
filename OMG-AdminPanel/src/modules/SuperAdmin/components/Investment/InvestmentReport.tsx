@@ -69,25 +69,25 @@ const Template: React.FC = () => {
   const statsConfig = [
     {
       key: "TotalInvestment",
-      title: "Total Investment",
+      title: "Total Purchase",
       icon: "payments",
       variant: "income",
     },
     {
       key: "ThisMonthInvestment",
-      title: "This Month Investment",
+      title: "This Month Purchase",
       icon: "calendar_month",
       variant: "income",
     },
     {
       key: "LastMonthInvestment",
-      title: "Last Month Investment",
+      title: "Last Month Purchase",
       icon: "history",
       variant: "income",
     },
     {
       key: "TodayInvestment",
-      title: "Today Investment",
+      title: "Today Purchase",
       icon: "today",
       variant: "highlight",
     },
@@ -455,7 +455,7 @@ const Template: React.FC = () => {
       <div className="trezo-card-header mb-[10px] md:mb-[10px] sm:flex items-center justify-between pb-5 border-b border-gray-200 -mx-[20px] md:-mx-[25px] px-[20px] md:px-[25px]">
         <div className="trezo-card-title">
           <h5 className="!mb-0 font-bold text-xl text-black dark:text-white">
-            Investment Report
+            Purchase History
           </h5>
         </div>
 
@@ -623,12 +623,12 @@ const Template: React.FC = () => {
       </div>
       {!showTable && (
         <LandingIllustration
-          title="Investment Report"
+          title="Purchase History"
           formName={formName}
           addLabel="Add Income"
           description={
             <>
-              Search Investment Report using filters above.
+              Search History using filters above.
               <br />
               Manage records, export reports and analyse performance.
               <br />
@@ -699,7 +699,7 @@ const Template: React.FC = () => {
                   className={!canExport ? "pointer-events-none opacity-50" : ""}
                 >
                   <ExportButtons
-                    title="Investment Report"
+                    title="Purchase History"
                     columns={exportColumns}
                     fetchData={fetchExportData}
                     disabled={!canExport}

@@ -450,7 +450,7 @@ const AppRoutes = () => {
                 element={<KYCApproval />}
               />
               <Route
-                path="/superadmin/investment/member-investment"
+                path="/superadmin/package/membership-package"
                 element={<MemberInvestment />}
               />
               //Package
@@ -596,7 +596,7 @@ const AppRoutes = () => {
               />
               //Report
               <Route
-                path="/superadmin/investment/investment-report"
+                path="/superadmin/package/purchase-history"
                 element={<InvestmentReport />}
               />
               <Route

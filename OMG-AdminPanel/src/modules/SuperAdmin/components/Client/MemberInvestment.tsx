@@ -313,10 +313,10 @@ const MemberWalletsElegant: React.FC = () => {
           </div>
           <div>
             <h5 className="!mb-0 font-bold text-xl text-black dark:text-white leading-tight">
-              Member Investment
+              Membership Package
             </h5>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 !mb-0">
-              Process and track investment packages for members
+              Process and track purchased packages for members
             </p>
           </div>
         </div>
@@ -334,7 +334,7 @@ const MemberWalletsElegant: React.FC = () => {
           </button>
           <PermissionAwareTooltip
             allowed={SmartActions.canAdd(formName)}
-            allowedText="Make Investment"
+            allowedText="Purchase Package"
             deniedText="Permission required"
           >
             <button
@@ -345,7 +345,7 @@ const MemberWalletsElegant: React.FC = () => {
                 text-white rounded-md text-sm font-medium transition-all shadow-sm"
             >
               <i className="material-symbols-outlined text-[16px]">trending_up</i>
-              Make Investment
+              Purchase Package
             </button>
           </PermissionAwareTooltip>
         </div>
@@ -453,7 +453,7 @@ const MemberWalletsElegant: React.FC = () => {
         <div className="rounded-xl border border-gray-100 dark:border-gray-700/60
           bg-gray-50/40 dark:bg-[#111827]/30 p-5">
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">
-            Investment Details
+            Package Details
           </p>
 
           <Formik
@@ -554,7 +554,7 @@ const MemberWalletsElegant: React.FC = () => {
                           {...field}
                           maxLength={250}
                           rows={3}
-                          placeholder="Optional notes about this investment..."
+                          placeholder="Optional notes about this purchase..."
                           className="w-full border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 text-sm
                             bg-white dark:bg-gray-800 dark:text-gray-100
                             focus:outline-none focus:border-primary-button-bg focus:ring-1 focus:ring-primary-button-bg/20
@@ -584,7 +584,7 @@ const MemberWalletsElegant: React.FC = () => {
                 style={{ fontVariationSettings: "'FILL' 0, 'wght' 500" }}>
                 history
               </i>
-              <span className="text-sm font-bold text-gray-800 dark:text-white">Investment History</span>
+              <span className="text-sm font-bold text-gray-800 dark:text-white">Purchase History</span>
             </div>
             {totalCount > 0 && (
               <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary-button-bg/10
@@ -615,7 +615,7 @@ const MemberWalletsElegant: React.FC = () => {
                     <td colSpan={7} className="py-14 text-center">
                       <div className="flex flex-col items-center gap-2 text-gray-400">
                         <i className="material-symbols-outlined text-5xl opacity-30">inventory_2</i>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No Investments Found</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Purchase History not found</p>
                         <p className="text-xs text-gray-400 dark:text-gray-500">
                           {selectedUser
                             ? "This member has no investment records yet."

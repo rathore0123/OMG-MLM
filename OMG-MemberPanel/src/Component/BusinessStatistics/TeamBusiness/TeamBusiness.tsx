@@ -139,7 +139,7 @@ const TeamBusiness = () => {
                         alt={item.ClientName}
                         onError={(e: any) => {
                           e.target.src =
-                            "http://122.160.25.202/mlmapi/uploads/ClientImages/default_user_male.png";
+                            import.meta.env.VITE_IMAGE_PREVIEW_URL+"ClientImages/default_user_male.png";
                         }}
                       />
                     </div>
