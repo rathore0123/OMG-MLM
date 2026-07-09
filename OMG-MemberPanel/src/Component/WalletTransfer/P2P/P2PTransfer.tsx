@@ -147,13 +147,15 @@ const P2PTransfer = () => {
       setUsername("Not Available");
     }
   };
-  const handleTransfer = async (values: P2PPropType) => {
+  const handleTransfer = async (
+    values: P2PPropType,
+    resetForm: () => void,
+  ) => {
     const confirmed = await ShowConfirmAlert(
       "Transfer",
       "Are you sure want to transfer",
     );
     if (confirmed) {
-      // Proceed with the action
       const param = {
         ClientId: ClientID,
         WalletType: values.WalletType,
@@ -167,8 +169,16 @@ const P2PTransfer = () => {
         Para: JSON.stringify(param),
       };
       const res = await doTransfer(obj);
-      if (res[0].StatusCode == "1") {
+
+      // ✅ Compare as string, since backend sends "1" not 1
+      if (String(res[0].StatusCode) === "1") {
         ShowSuccessAlert(res[0].Msg);
+        resetForm();
+        setUsername("");
+        setIsOtpSent(false);
+        setOtpTimer(0);
+        setdisablebtn(false);
+        GetWithdrawalEntityType(); // refresh wallet balance
       } else {
         showAlert(res[0].Msg);
       }
@@ -285,8 +295,8 @@ const P2PTransfer = () => {
                   <Formik
                     initialValues={P2PForminitialValues}
                     validationSchema={TransferSchema}
-                    onSubmit={(values, { setSubmitting }) => {
-                      handleTransfer(values);
+                    onSubmit={(values, { setSubmitting, resetForm }) => {
+                      handleTransfer(values, resetForm);
                       setSubmitting(false);
                     }}
                   >
@@ -429,7 +439,7 @@ const P2PTransfer = () => {
                                       (((Number(values.TransferAmount) || 0) *
                                         transferSettings.TransferCharge) /
                                         100) *
-                                        100,
+                                      100,
                                     ) / 100
                                   ).toFixed(2)}
                                 </strong>
@@ -444,9 +454,9 @@ const P2PTransfer = () => {
                                       (((Number(values.TransferAmount) || 0) *
                                         transferSettings.TransferCharge) /
                                         100) *
-                                        100,
+                                      100,
                                     ) /
-                                      100
+                                    100
                                   ).toFixed(2)}
                                 </strong>
                               </div>
