@@ -75,7 +75,8 @@ const Sidebar = () => {
     });
 
     if (!result.isConfirmed) return;
-
+    localStorage.clear();
+    sessionStorage.clear();
     clearMemberSession();
     window.location.href = "portal/login";
   };

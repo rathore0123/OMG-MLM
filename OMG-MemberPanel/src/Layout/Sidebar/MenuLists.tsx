@@ -56,9 +56,8 @@ const MenuIcon = ({
 
   return (
     <span
-      className={`material-symbols-outlined sidebar-icon ${
-        isActive ? "icon-active" : ""
-      }`}
+      className={`material-symbols-outlined sidebar-icon ${isActive ? "icon-active" : ""
+        }`}
       style={{ fontSize: "20px", marginRight: "10px" }}
     >
       {icon}
@@ -163,7 +162,7 @@ const MenuLists: React.FC<MenuListType> = ({
   ───────────────────────────────────────────── */
 
   const HandleLogOut = () => {
-    localStorage.clear();
+    sessionStorage.clear();
 
     ShowSuccessAlert("Successfully Logged Out");
   };
@@ -202,12 +201,11 @@ const MenuLists: React.FC<MenuListType> = ({
           >
             <Link
               className={`
-                ${
-                  !className
-                    ? "sidebar-link sidebar-title"
-                    : item.type === "sub"
-                      ? "submenu-title"
-                      : ""
+                ${!className
+                  ? "sidebar-link sidebar-title"
+                  : item.type === "sub"
+                    ? "submenu-title"
+                    : ""
                 }
 
                 ${routeActive ? "active" : ""}
@@ -227,7 +225,7 @@ const MenuLists: React.FC<MenuListType> = ({
               }
               target={
                 item.path ===
-                "https://mimpiglobal.xyz/MimpiGlobalBusinessPlan.pdf"
+                  "https://mimpiglobal.xyz/MimpiGlobalBusinessPlan.pdf"
                   ? "_blank"
                   : undefined
               }
@@ -274,11 +272,10 @@ const MenuLists: React.FC<MenuListType> = ({
 
             {item.children && (
               <UL
-                className={`simple-list ${
-                  level !== 0
+                className={`simple-list ${level !== 0
                     ? "nav-sub-childmenu submenu-content"
                     : "sidebar-submenu"
-                }`}
+                  }`}
                 style={{
                   display: menuOpen || routeActive ? "block" : "none",
                 }}

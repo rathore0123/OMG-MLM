@@ -152,6 +152,9 @@ const ContainerDashboard = () => {
   const [fxstModal, setFxstModal] = useState(false);
   const [popImageURL, setPopImageURL] = useState("announcement.jpeg");
 
+  /* ── Welcome / login popup — shows once per login session ── */
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+
   /* ── live dashboard data ── */
   const [dashData, setDashData] = useState<DashboardData | null>(null);
   const [bvStats, setBvStats] = useState<any>(null);
@@ -279,6 +282,27 @@ const ContainerDashboard = () => {
     fetchDashboard();
   }, []);
 
+  /* ──────────────── welcome popup: show once per login ────────────────
+     sessionStorage clears when the tab/browser is closed, so a fresh
+     browser session (i.e. a fresh login in most flows) will show the
+     popup again. If your app can log out/in within the SAME tab without
+     a reload, make sure your logout handler also clears this flag:
+       sessionStorage.removeItem(`welcomePopupShown_${sponsorId}`);
+     or simply sessionStorage.clear();
+  ────────────────────────────────────────────────────────────────────── */
+  useEffect(() => {
+    const sponsorId = getSponsorId();
+    if (!sponsorId) return;
+
+    const flagKey = `welcomePopupShown_${sponsorId}`;
+    const alreadyShown = sessionStorage.getItem(flagKey);
+
+    if (!alreadyShown) {
+      setWelcomeModalOpen(true);
+      sessionStorage.setItem(flagKey, "true");
+    }
+  }, []);
+
   /* ──────────────── derived values ──────────────── */
 
   const recentDirects = safeParseJSON<RecentDirect[]>(
@@ -360,6 +384,10 @@ const ContainerDashboard = () => {
   const closeFxstModal = () => {
     document.body.style.paddingRight = "";
     setFxstModal(false);
+  };
+  const closeWelcomeModal = () => {
+    document.body.style.paddingRight = "";
+    setWelcomeModalOpen(false);
   };
 
   /* ──────────────── team stats computed values ──────────────── */
@@ -964,6 +992,82 @@ const ContainerDashboard = () => {
             </div>
           </ModalBody>
         </Modal>
+
+        {/* ── Welcome popup: shows once per login (sessionStorage-based) ── */}
+        <Modal
+          isOpen={welcomeModalOpen}
+          toggle={closeWelcomeModal}
+          centered
+          className="welcome-promo-modal"
+        >
+          <div className="welcome-promo-card">
+            <button
+              className="welcome-promo-close"
+              onClick={closeWelcomeModal}
+              type="button"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+
+            <div className="welcome-promo-header">
+              <div className="welcome-promo-badge">
+                <GiWallet />
+              </div>
+              <h3>Welcome Back{getSponsorId() ? `, ${getSponsorId()}` : ""}!</h3>
+              <p className="welcome-promo-sub">
+                A limited opportunity is waiting for you
+              </p>
+            </div>
+
+            <div className="welcome-promo-body">
+              <div className="welcome-promo-price">
+                <span className="welcome-promo-price-label">Unlock with</span>
+                <span className="welcome-promo-price-value">
+                  {currency.symbol}1,699 Package
+                </span>
+              </div>
+
+              <p className="welcome-promo-message">
+                Purchase the {currency.symbol}1,699 package and unlock
+                multiple benefits, including health insurance, loan
+                assistance, and exclusive member benefits.
+              </p>
+
+              <ul className="welcome-promo-benefits">
+                <li>
+                  <span className="welcome-promo-benefit-icon">🩺</span>
+                  <span>Health insurance coverage</span>
+                </li>
+                <li>
+                  <span className="welcome-promo-benefit-icon">💳</span>
+                  <span>Loan assistance</span>
+                </li>
+                <li>
+                  <span className="welcome-promo-benefit-icon">🎁</span>
+                  <span>Exclusive member benefits</span>
+                </li>
+              </ul>
+
+              {/* <div className="welcome-promo-actions">
+                <button
+                  className="welcome-promo-btn-primary"
+                  onClick={closeWelcomeModal}
+                  type="button"
+                >
+                  Purchase Now
+                </button>
+                <button
+                  className="welcome-promo-btn-secondary"
+                  onClick={closeWelcomeModal}
+                  type="button"
+                >
+                  Maybe Later
+                </button>
+              </div> */}
+            </div>
+          </div>
+        </Modal>
       </Container>
 
       {/* CSS styles - Vibrant theme colors for referral cards (Updated for single button) */}
@@ -1272,6 +1376,188 @@ const ContainerDashboard = () => {
           .btn-copy {
             width: 100%;
             justify-content: center;
+          }
+        }
+
+        /* ── Welcome promo modal ── */
+        .welcome-promo-modal .modal-content {
+          background: transparent;
+          border: none;
+          box-shadow: none;
+        }
+
+        .welcome-promo-card {
+          position: relative;
+          background: #ffffff;
+          border-radius: 18px;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .welcome-promo-close {
+          position: absolute;
+          top: 12px;
+          right: 14px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: none;
+          background: rgba(255, 255, 255, 0.2);
+          color: #fff;
+          font-size: 20px;
+          line-height: 1;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+          transition: background 0.2s ease;
+        }
+
+        .welcome-promo-close:hover {
+          background: rgba(255, 255, 255, 0.35);
+        }
+
+        .welcome-promo-header {
+          background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+          padding: 32px 28px 28px;
+          text-align: center;
+          color: #fff;
+        }
+
+        .welcome-promo-badge {
+          width: 56px;
+          height: 56px;
+          margin: 0 auto 14px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.18);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 26px;
+          color: #fff;
+        }
+
+        .welcome-promo-header h3 {
+          margin: 0 0 4px;
+          font-size: 1.3rem;
+          font-weight: 700;
+        }
+
+        .welcome-promo-sub {
+          margin: 0;
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.85);
+        }
+
+        .welcome-promo-body {
+          padding: 24px 28px 28px;
+          background: #ffffff;
+        }
+
+        .welcome-promo-price {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+          margin-bottom: 14px;
+        }
+
+        .welcome-promo-price-label {
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+          color: #94a3b8;
+          font-weight: 600;
+        }
+
+        .welcome-promo-price-value {
+          font-size: 1.6rem;
+          font-weight: 800;
+          color: #4c1d95;
+        }
+
+        .welcome-promo-message {
+          text-align: center;
+          font-size: 0.92rem;
+          line-height: 1.5;
+          color: #334155;
+          margin: 0 0 18px;
+        }
+
+        .welcome-promo-benefits {
+          list-style: none;
+          margin: 0 0 22px;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .welcome-promo-benefits li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: #f8f5ff;
+          border: 1px solid #ede9fe;
+          border-radius: 10px;
+          padding: 10px 14px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #4c1d95;
+        }
+
+        .welcome-promo-benefit-icon {
+          font-size: 1.1rem;
+        }
+
+        .welcome-promo-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .welcome-promo-btn-primary {
+          background: linear-gradient(135deg, #7c3aed, #5b21b6);
+          color: #fff;
+          border: none;
+          border-radius: 10px;
+          padding: 13px;
+          font-size: 0.95rem;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .welcome-promo-btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 22px rgba(124, 58, 237, 0.45);
+        }
+
+        .welcome-promo-btn-secondary {
+          background: transparent;
+          color: #64748b;
+          border: none;
+          padding: 6px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .welcome-promo-btn-secondary:hover {
+          color: #334155;
+          text-decoration: underline;
+        }
+
+        @media (max-width: 576px) {
+          .welcome-promo-header {
+            padding: 26px 20px 22px;
+          }
+
+          .welcome-promo-body {
+            padding: 20px 20px 22px;
           }
         }
       `}</style>

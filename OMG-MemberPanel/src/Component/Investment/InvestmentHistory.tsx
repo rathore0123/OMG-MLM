@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import DataTable from "react-data-table-component";
 import { Container } from "reactstrap";
 import { useLocation } from "react-router-dom";
+import jsPDF from "jspdf";
 import { ApiService } from "../../Service/UniversalService/ApiService";
 import CustomPagination from "../../CommonElements/DataTableComponent/CommonFormElements/Pagination/CustomPagination";
 import { customStyles } from "../../CommonElements/DataTableComponent/CustomStyle/CustomStyle";
@@ -34,6 +35,25 @@ const getEmployeeId = () => {
   }
 };
 
+/* ─── receipt transaction-code formatter ─────────────
+   NOTE: This is a purely COSMETIC formatter, not a secure hash.
+   A 6-digit TransactionNo only has ~1M possible values, so this
+   scramble is trivially reversible/guessable. It only exists to
+   make the raw number look like a receipt reference code
+   (e.g. 974693 -> "TXN-K3F8Q2"). Never rely on this for uniqueness
+   or security — keep using the raw TransactionNo wherever the
+   transaction actually needs to be identified or looked up.
+──────────────────────────────────────────────────── */
+const formatTransactionCode = (transactionNo: number | string): string => {
+  const num = Number(transactionNo);
+  if (!num || Number.isNaN(num)) return "TXN-UNKNOWN";
+
+  // Deterministic scramble for display only (Knuth multiplicative hash)
+  const scrambled = Math.abs((num * 2654435761) % 0xffffffff);
+  const code = scrambled.toString(36).toUpperCase().slice(0, 8);
+  return `TXN-${code}`;
+};
+
 /* ─── types ───────────────────────────────────────── */
 interface DateRange {
   from: string;
@@ -62,6 +82,13 @@ const Template: React.FC = () => {
   const [columnsReady, setColumnsReady] = useState(false);
   const [tableLoading, setTableLoading] = useState(false); // FIX: start false — no flicker before first search
   const [refreshGrid, setRefreshGrid] = useState(0);
+
+  // FIX: tracks which row's receipt is currently being generated,
+  // so the Action column can show a per-row loading state.
+  const [downloadingRow, setDownloadingRow] = useState<string | number | null>(
+    null,
+  );
+
   //centralised values
   const procedureName = "TokenPurchaseReport";
   const pageTitle = InvestmentHistory;
@@ -150,6 +177,178 @@ const Template: React.FC = () => {
     fetchGridData({ pageOverride: p, perPageOverride: newPerPage });
   };
 
+  /* ── Receipt download ──
+     No backend endpoint generates the receipt. Instead:
+       1. Look up the matching row in Client.MemberTransactionLogs
+          (TransactionNote = "Investment Purchase") to get TransactionNo.
+       2. Format TransactionNo into a receipt-style code (cosmetic only).
+       3. Build a PDF client-side with jsPDF and trigger the download.
+
+     ⚠️ ADJUST THESE TO MATCH YOUR ACTUAL SCHEMA/PROC:
+       - `rowKey`      : the field that identifies a TokenPurchaseReport row
+                         (used to look up the matching transaction log entry)
+       - `procName`    : the actual stored proc that queries
+                         Client.MemberTransactionLogs
+       - `Para` fields : the actual parameters that proc expects
+  ── */
+  const handleDownloadReceipt = useCallback(
+    async (row: any) => {
+      // ⚠️ IncomeLogId isn't available to pass through, so the log
+      // entry is instead matched by Amount + purchase date. Adjust
+      // these field names if TokenPurchaseReport calls them
+      // something else (e.g. row.Date instead of row.PurchaseDate).
+      const rowAmount = row.TotalInvestment ?? row.Amount;
+      const rowDate = row.PurchaseDate ?? row.Date;
+      const rowKey = `${rowAmount}_${rowDate}`; // used only for the per-row loading state
+
+      if (rowAmount == null) {
+        console.error("Missing Amount or Date on row — cannot match transaction log");
+        return;
+      }
+
+      try {
+        setDownloadingRow(rowKey);
+
+        // 1. Look up the TransactionNo from MemberTransactionLogs
+        const payload = {
+          procName: "GetMemberTransactionLog",
+          Para: JSON.stringify({
+            ClientId: ClientID,
+            TransactionNote: "Investment Purchase",
+            LogType: "Package Investment",
+          }),
+        };
+        const res = await universalService(payload);
+        const result = res?.data ?? res;
+        const logEntry = Array.isArray(result) ? result[0] : result;
+        const transactionNo = logEntry?.TransactionNo;
+
+        if (!transactionNo) {
+          console.error("No matching transaction log entry found");
+          return;
+        }
+
+        const txnCode = formatTransactionCode(transactionNo);
+
+        // Date comes from the log entry itself (confirmed present as
+        // EntryDate in the API response), not from the report row —
+        // the report row doesn't reliably expose a date field.
+        const rawDate = logEntry?.EntryDate;
+        const formattedDate = rawDate
+          ? format(new Date(rawDate), "dd MMM yyyy, hh:mm a")
+          : "-";
+
+        // 2. Build the PDF receipt
+        const doc = new jsPDF({ unit: "pt", format: "a4" });
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const marginX = 48;
+        const contentWidth = pageWidth - marginX * 2;
+
+        // ── Header band ──
+        doc.setFillColor(33, 37, 61); // dark navy band
+        doc.rect(0, 0, pageWidth, 90, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20);
+        doc.setFont("helvetica", "bold");
+        doc.text("Donation Receipt", marginX, 45);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Reference: ${txnCode}`, marginX, 68);
+
+        // ── Outer bordered card ──
+        const cardTop = 120;
+        const cardBottom = 430;
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(1);
+        doc.roundedRect(
+          marginX,
+          cardTop,
+          contentWidth,
+          cardBottom - cardTop,
+          6,
+          6,
+        );
+
+        // ── Amount highlight block ──
+        const amountValue = row.TotalInvestment ?? row.Amount ?? logEntry.Amount ?? "-";
+        doc.setFillColor(245, 247, 250);
+        doc.roundedRect(marginX + 20, cardTop + 20, contentWidth - 40, 70, 4, 4, "F");
+        doc.setTextColor(110, 110, 110);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text("AMOUNT", marginX + 36, cardTop + 42);
+        doc.setTextColor(33, 37, 61);
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text(String(amountValue), marginX + 36, cardTop + 70);
+
+        // Status pill, right-aligned inside the highlight block
+        const statusValue = String(row.Status ?? "-");
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        const statusColor =
+          statusValue.toLowerCase() === "success" ||
+            statusValue.toLowerCase() === "completed"
+            ? [46, 160, 90]
+            : [200, 90, 40];
+        doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+        doc.text(statusValue.toUpperCase(), pageWidth - marginX - 36, cardTop + 55, {
+          align: "right",
+        });
+
+        // ── Detail rows ──
+        const rows: [string, string][] = [
+          ["Transaction No.", txnCode],
+          ["Date", formattedDate],
+          ["Member", String(row.Client ?? row.ClientName ?? "-")],
+          ["Package", String(row.PackageName ?? "-")],
+        ];
+
+        let rowY = cardTop + 130;
+        const rowHeight = 34;
+        doc.setFontSize(10);
+
+        rows.forEach(([label, value], idx) => {
+          if (idx % 2 === 1) {
+            doc.setFillColor(250, 250, 252);
+            doc.rect(marginX + 1, rowY - 20, contentWidth - 2, rowHeight, "F");
+          }
+          doc.setTextColor(120, 120, 120);
+          doc.setFont("helvetica", "normal");
+          doc.text(label, marginX + 20, rowY);
+          doc.setTextColor(33, 37, 61);
+          doc.setFont("helvetica", "bold");
+          doc.text(value, pageWidth - marginX - 20, rowY, { align: "right" });
+          rowY += rowHeight;
+        });
+
+        // ── Footer ──
+        doc.setDrawColor(230, 230, 230);
+        doc.line(marginX, cardBottom + 30, pageWidth - marginX, cardBottom + 30);
+        doc.setFontSize(8.5);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          "This is a system-generated receipt and does not require a signature.",
+          marginX,
+          cardBottom + 48,
+        );
+        doc.text(
+          `Generated on ${format(new Date(), "dd MMM yyyy, hh:mm a")}`,
+          marginX,
+          cardBottom + 62,
+        );
+
+        doc.save(`Receipt_${txnCode}.pdf`);
+      } catch (err) {
+        console.error("Receipt generation failed", err);
+      } finally {
+        setDownloadingRow(null);
+      }
+    },
+    [ClientID], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   /* ── Fetch columns ── */
   const fetchGridColumns = useCallback(async () => {
     try {
@@ -237,6 +436,40 @@ const Template: React.FC = () => {
       setColumns([]);
     }
   }, [refreshGrid]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* ── Action column (Download Receipt) ──
+     FIX: kept separate from `columns` (which is rebuilt only when
+     fetchGridColumns runs) and merged in at render time via
+     `displayColumns` below. This way the button's disabled/loading
+     state always reflects the current `downloadingRow` without
+     needing to refetch the server-driven columns. */
+  const actionColumn = {
+    id: "action",
+    name: "Action",
+    columnKey: "",
+    sortable: false,
+    cell: (row: any) => {
+      if (row.__isTotal) return "";
+      const rowAmount = row.TotalInvestment ?? row.Amount;
+      const rowDate = row.PurchaseDate ?? row.Date;
+      const rowKey = `${rowAmount}_${rowDate}`; // ⚠️ keep in sync with handleDownloadReceipt
+      const isLoading = downloadingRow === rowKey;
+      return (
+        <button
+          className="icon-btn"
+          onClick={() => handleDownloadReceipt(row)}
+          disabled={isLoading}
+          title="Download Receipt"
+        >
+          <i className="material-symbols-outlined">
+            {isLoading ? "progress_activity" : "download"}
+          </i>
+        </button>
+      );
+    },
+  };
+
+  const displayColumns = columns.length ? [...columns, actionColumn] : columns;
 
   /* ── Export ── */
   const exportColumns = columns
@@ -394,13 +627,13 @@ const Template: React.FC = () => {
   const totalRow =
     Object.keys(pageTotals).length > 0
       ? columns.reduce((acc: any, col: any) => {
-          if (!col.columnKey) {
-            acc.__label = "Page Total";
-            return acc;
-          }
-          acc[col.columnKey] = col.isTotal ? pageTotals[col.columnKey] : "";
+        if (!col.columnKey) {
+          acc.__label = "Page Total";
           return acc;
-        }, {})
+        }
+        acc[col.columnKey] = col.isTotal ? pageTotals[col.columnKey] : "";
+        return acc;
+      }, {})
       : null;
 
   const tableData =
@@ -540,7 +773,7 @@ const Template: React.FC = () => {
 
               <div className="trezo-card-content">
                 <DataTable
-                  columns={columns}
+                  columns={displayColumns}
                   data={tableData}
                   customStyles={customStyles}
                   pagination
@@ -563,7 +796,7 @@ const Template: React.FC = () => {
                   progressComponent={
                     <TableSkeleton
                       rows={perPage}
-                      columns={columns.length || 8}
+                      columns={displayColumns.length || 8}
                     />
                   }
                   conditionalRowStyles={[

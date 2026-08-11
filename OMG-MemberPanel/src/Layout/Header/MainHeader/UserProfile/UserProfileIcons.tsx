@@ -9,6 +9,7 @@ const UserProfileIcons = () => {
   const handleClick = (name: string) => {
     if (name === "Log Out") {
       localStorage.clear();
+      sessionStorage.clear();
       ShowSuccessAlert("Successfully Logged Out.")
       navigate(`${import.meta.env.BASE_URL}/loginauth`)
       

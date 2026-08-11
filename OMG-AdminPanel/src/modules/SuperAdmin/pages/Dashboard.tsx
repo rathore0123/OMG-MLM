@@ -500,7 +500,7 @@ const Dashboard: React.FC = () => {
           iconColor="text-blue-500"
           iconBg="bg-blue-50 dark:bg-blue-900/20"
           stripColor="#3b82f6"
-          onClick={go("/superadmin/investment/investment-report")}
+          onClick={go("package/purchase-history")}
         />
         <StatCard
           label="Wallet Balance"
@@ -1010,7 +1010,7 @@ const Dashboard: React.FC = () => {
                       variants={fadeRow}
                       initial="hidden"
                       animate="show"
-                      onClick={go("/superadmin/investment/investment-report")}
+                      onClick={go("package/purchase-history")}
                       className="cursor-pointer hover:bg-gray-50 dark:hover:bg-[#172036] transition-colors"
                     >
                       <td className="ltr:text-left whitespace-nowrap px-0 py-[13px] border-b border-gray-100 dark:border-[#172036]">
