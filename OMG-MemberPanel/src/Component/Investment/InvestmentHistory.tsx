@@ -16,6 +16,7 @@ import { InvestmentHistory } from "../../utils/Constant";
 import DateRangeFilter from "../../CommonElements/DateRangePicker/DateRange";
 import NoDataFound from "../../CommonElements/NodataFound/NoDataFound";
 import { useCurrency } from "../../Context/CurrencyContext";
+import { useCompany } from "../../Context/CompanyContext";
 import { decryptData } from "../../utils/helper/Crypto";
 import StatusBadge from "../../CommonElements/DataTableComponent/CommonFormElements/StatusBadge/StatusBadge";
 
@@ -53,6 +54,105 @@ const formatTransactionCode = (transactionNo: number | string): string => {
   const code = scrambled.toString(36).toUpperCase().slice(0, 8);
   return `TXN-${code}`;
 };
+
+/* ─── amount-in-words (Indian numbering: Crore/Lakh/Thousand) ─── */
+const numberToWords = (num: number): string => {
+  const ones = [
+    "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+    "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+    "Seventeen", "Eighteen", "Nineteen",
+  ];
+  const tens = [
+    "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety",
+  ];
+
+  const twoDigits = (n: number): string => {
+    if (n < 20) return ones[n];
+    return `${tens[Math.floor(n / 10)]}${n % 10 ? " " + ones[n % 10] : ""}`;
+  };
+
+  const threeDigits = (n: number): string => {
+    const hundred = Math.floor(n / 100);
+    const rest = n % 100;
+    return `${hundred ? ones[hundred] + " Hundred" + (rest ? " " : "") : ""}${rest ? twoDigits(rest) : ""}`;
+  };
+
+  if (num === 0) return "Zero";
+
+  const crore = Math.floor(num / 10000000);
+  const lakh = Math.floor((num % 10000000) / 100000);
+  const thousand = Math.floor((num % 100000) / 1000);
+  const rest = num % 1000;
+
+  const parts: string[] = [];
+  if (crore) parts.push(`${threeDigits(crore)} Crore`);
+  if (lakh) parts.push(`${threeDigits(lakh)} Lakh`);
+  if (thousand) parts.push(`${threeDigits(thousand)} Thousand`);
+  if (rest) parts.push(threeDigits(rest));
+
+  return parts.join(" ") || "Zero";
+};
+
+const amountInWords = (amount: number): string =>
+  `${numberToWords(Math.round(Math.abs(amount)))} Only`;
+
+/* ─── duotone highlight-badge icons: a translucent white chip (reads as a
+   lighter tint of the badge color) behind a solid-white glyph on top ─── */
+const drawDuotoneIcon = (
+  doc: jsPDF,
+  type: "lock" | "bolt" | "check" | "document" | "clock",
+  cx: number,
+  cy: number,
+) => {
+  doc.setGState(new (doc as any).GState({ opacity: 0.35 }));
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(cx - 8, cy - 8, 16, 16, 3, 3, "F");
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(255, 255, 255);
+
+  switch (type) {
+    case "lock":
+      doc.setLineWidth(1.2);
+      doc.circle(cx, cy - 3.5, 2.6, "S");
+      doc.roundedRect(cx - 3.5, cy - 1.5, 7, 5.5, 1, 1, "F");
+      break;
+    case "bolt":
+      doc.triangle(cx + 2, cy - 6.5, cx - 2.5, cy + 1, cx + 1, cy + 1, "F");
+      doc.triangle(cx - 1, cy - 1, cx + 2.5, cy - 1, cx - 2, cy + 6.5, "F");
+      break;
+    case "check":
+      doc.setLineWidth(1.5);
+      doc.line(cx - 3.5, cy, cx - 1, cy + 3);
+      doc.line(cx - 1, cy + 3, cx + 4, cy - 3.5);
+      break;
+    case "document":
+      doc.setLineWidth(0.9);
+      doc.roundedRect(cx - 3, cy - 4, 6, 8, 0.6, 0.6, "S");
+      doc.setLineWidth(0.8);
+      doc.line(cx - 1.6, cy - 1, cx + 1.6, cy - 1);
+      doc.line(cx - 1.6, cy + 1.2, cx + 0.8, cy + 1.2);
+      break;
+    case "clock":
+      doc.setLineWidth(1.1);
+      doc.circle(cx, cy, 4.5, "S");
+      doc.setLineWidth(0.9);
+      doc.line(cx, cy, cx, cy - 2.6);
+      doc.line(cx, cy, cx + 2.2, cy + 0.4);
+      break;
+  }
+};
+
+/* ─── loads a same-origin image so jsPDF's addImage can embed it ─── */
+const loadImage = (src: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    img.src = src;
+  });
 
 /* ─── types ───────────────────────────────────────── */
 interface DateRange {
@@ -122,6 +222,7 @@ const Template: React.FC = () => {
   const formName = location.pathname.split("/").pop();
   const canExport = true;
   const { currency } = useCurrency();
+  const { company } = useCompany();
 
   const statsConfig = [
     {
@@ -238,105 +339,402 @@ const Template: React.FC = () => {
           ? format(new Date(rawDate), "dd MMM yyyy, hh:mm a")
           : "-";
 
-        // 2. Build the PDF receipt
+        // 2. Load the project logo (used in header/loader/bottom-nav) so it
+        //    can be embedded in the PDF — failure here shouldn't block the receipt.
+        let logoImg: HTMLImageElement | null = null;
+        try {
+          logoImg = await loadImage(
+            `${import.meta.env.BASE_URL}/assets/images/logo/favicon.png`,
+          );
+        } catch {
+          logoImg = null;
+        }
+
+        const brandName = company?.CompanyName || "OMG";
+        const amountRaw = Number(
+          row.TotalInvestment ?? row.Amount ?? logEntry?.Amount ?? 0,
+        );
+        const formatAmount = (val: number) => {
+          const formatted = Number(val).toLocaleString("en-IN");
+          // jsPDF's base "helvetica" font only covers WinAnsi, which excludes
+          // ₹ — it would otherwise print as a garbled glyph. Substitute "Rs."
+          // for the PDF only; the on-screen table still renders ₹ normally.
+          if (currency.symbol === "₹") return `Rs. ${formatted}`;
+          return currency.symbol.length === 1
+            ? `${currency.symbol}${formatted}`
+            : `${formatted} ${currency.symbol}`;
+        };
+
+        // 3. Build the PDF receipt
         const doc = new jsPDF({ unit: "pt", format: "a4" });
         const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
         const marginX = 48;
         const contentWidth = pageWidth - marginX * 2;
 
-        // ── Header band ──
-        doc.setFillColor(33, 37, 61); // dark navy band
-        doc.rect(0, 0, pageWidth, 90, "F");
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(20);
-        doc.setFont("helvetica", "bold");
-        doc.text("Donation Receipt", marginX, 45);
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Reference: ${txnCode}`, marginX, 68);
+        const NAVY: [number, number, number] = [24, 34, 74];
+        const GOLD: [number, number, number] = [196, 160, 70];
+        const GOLD_PALE: [number, number, number] = [223, 205, 158];
+        const GRAY: [number, number, number] = [120, 122, 130];
+        const GREEN: [number, number, number] = [39, 152, 96];
+        const AMBER: [number, number, number] = [196, 130, 40];
+        const SHADOW: [number, number, number] = [225, 227, 233];
+        const ROW_TINT: [number, number, number] = [246, 247, 251];
 
-        // ── Outer bordered card ──
-        const cardTop = 120;
-        const cardBottom = 430;
-        doc.setDrawColor(220, 220, 220);
-        doc.setLineWidth(1);
-        doc.roundedRect(
-          marginX,
-          cardTop,
-          contentWidth,
-          cardBottom - cardTop,
-          6,
-          6,
+        // ── Header: brand (left) + receipt-title ribbon (right) ──
+        const logoSize = 50;
+        const logoX = marginX;
+        const logoY = 24;
+        if (logoImg) {
+          doc.addImage(logoImg, "PNG", logoX, logoY, logoSize, logoSize);
+        } else {
+          doc.setFillColor(...NAVY);
+          doc.circle(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(20);
+          doc.setTextColor(255, 255, 255);
+          doc.text(
+            brandName.charAt(0).toUpperCase(),
+            logoX + logoSize / 2,
+            logoY + logoSize / 2 + 7,
+            { align: "center" },
+          );
+        }
+
+        const brandTextX = logoX + logoSize + 14;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(17);
+        doc.setTextColor(...NAVY);
+        doc.text(brandName, brandTextX, logoY + 22);
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...GRAY);
+        doc.text("Secure Giving. Trusted Impact.", brandTextX, logoY + 36);
+
+        // ── Ribbon: navy title card with a folded gold flap + stitched seam ──
+        const ribbonW = 230;
+        const ribbonH = 74;
+        const ribbonX = pageWidth - marginX - ribbonW;
+        const ribbonY = 18;
+
+        const flapTipX = ribbonX - 22;
+        doc.setFillColor(...GOLD);
+        doc.triangle(
+          flapTipX, ribbonY + ribbonH,
+          ribbonX, ribbonY,
+          ribbonX, ribbonY + ribbonH,
+          "F",
         );
+        doc.setFillColor(...NAVY);
+        for (let t = 0.08; t <= 0.94; t += 0.14) {
+          doc.circle(
+            flapTipX + (ribbonX - flapTipX) * t,
+            ribbonY + ribbonH - (ribbonH * t),
+            0.9,
+            "F",
+          );
+        }
 
-        // ── Amount highlight block ──
-        const amountValue = row.TotalInvestment ?? row.Amount ?? logEntry.Amount ?? "-";
-        doc.setFillColor(245, 247, 250);
-        doc.roundedRect(marginX + 20, cardTop + 20, contentWidth - 40, 70, 4, 4, "F");
-        doc.setTextColor(110, 110, 110);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text("AMOUNT", marginX + 36, cardTop + 42);
-        doc.setTextColor(33, 37, 61);
-        doc.setFontSize(22);
-        doc.setFont("helvetica", "bold");
-        doc.text(String(amountValue), marginX + 36, cardTop + 70);
+        doc.setFillColor(...NAVY);
+        doc.roundedRect(ribbonX, ribbonY, ribbonW, ribbonH, 6, 6, "F");
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(2.4);
+        doc.line(ribbonX + 16, ribbonY + 6, ribbonX + ribbonW - 16, ribbonY + 6);
 
-        // Status pill, right-aligned inside the highlight block
-        const statusValue = String(row.Status ?? "-");
-        doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
-        const statusColor =
-          statusValue.toLowerCase() === "success" ||
-            statusValue.toLowerCase() === "completed"
-            ? [46, 160, 90]
-            : [200, 90, 40];
-        doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
-        doc.text(statusValue.toUpperCase(), pageWidth - marginX - 36, cardTop + 55, {
+        doc.setFontSize(14);
+        doc.setTextColor(255, 255, 255);
+        doc.text("DONATION RECEIPT", ribbonX + ribbonW - 16, ribbonY + 34, {
           align: "right",
         });
 
-        // ── Detail rows ──
-        const rows: [string, string][] = [
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(230, 230, 235);
+        doc.text(`Reference: ${txnCode}`, ribbonX + ribbonW - 16, ribbonY + 54, {
+          align: "right",
+        });
+
+        // ── Precompute the card's full layout up front (every offset below
+        //    is a fixed constant) so the shadow + card surface can be painted
+        //    before any interior content is drawn on top of it. ──
+        const cardTop = 130;
+        const amountPanelY = cardTop + 16;
+        const amountPanelH = 78;
+        const rowHeight = 32;
+        const detailRowsCount = 4;
+        const detailRowsTop = amountPanelY + amountPanelH + 26;
+        const detailBottom = detailRowsTop + rowHeight * detailRowsCount;
+        const bannerH = 24;
+        const bannerY = detailBottom + 22;
+        const tilesY = bannerY + bannerH + 22;
+        const tilesBottom = tilesY + 46;
+        const cardBottom = tilesBottom + 46;
+        const cardRadius = 10;
+
+        // shadow + white card surface
+        doc.setFillColor(...SHADOW);
+        doc.roundedRect(marginX + 3, cardTop + 4, contentWidth, cardBottom - cardTop, cardRadius, cardRadius, "F");
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(marginX, cardTop, contentWidth, cardBottom - cardTop, cardRadius, cardRadius, "F");
+
+        // ── Amount + status panel ──
+        const panelX = marginX + 16;
+        const panelW = contentWidth - 32;
+
+        doc.setFillColor(246, 248, 251);
+        doc.roundedRect(panelX, amountPanelY, panelW, amountPanelH, 6, 6, "F");
+
+        const dividerX = panelX + panelW * 0.66;
+
+        // faint rotated watermark, sitting behind the amount text
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(240, 242, 247);
+        doc.text("VERIFIED", panelX + (dividerX - panelX) / 2, amountPanelY + amountPanelH / 2 + 6, {
+          align: "center",
+          angle: 14,
+        });
+
+        doc.setDrawColor(224, 227, 233);
+        doc.setLineWidth(1);
+        doc.line(dividerX, amountPanelY + 12, dividerX, amountPanelY + amountPanelH - 12);
+
+        // amount (left)
+        const iconCx = panelX + 30;
+        const iconCy = amountPanelY + amountPanelH / 2;
+        doc.setFillColor(...NAVY);
+        doc.circle(iconCx, iconCy, 15, "F");
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(1.4);
+        doc.circle(iconCx, iconCy, 8, "S");
+
+        const amountTextX = iconCx + 30;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(...GRAY);
+        doc.text("AMOUNT", amountTextX, amountPanelY + 24);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(19);
+        doc.setTextColor(...NAVY);
+        doc.text(formatAmount(amountRaw), amountTextX, amountPanelY + 46);
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(7.5);
+        doc.setTextColor(...GRAY);
+        const wordsMaxWidth = dividerX - amountTextX - 10;
+        const wordsLines = doc.splitTextToSize(amountInWords(amountRaw), wordsMaxWidth);
+        doc.text(wordsLines[0] ?? "", amountTextX, amountPanelY + 60);
+
+        // status (right)
+        const statusValue = String(row.Status ?? "-");
+        const isPositive = ["success", "completed", "active"].includes(
+          statusValue.toLowerCase(),
+        );
+        const statusColor = isPositive ? GREEN : AMBER;
+        const statusCx = dividerX + (panelX + panelW - dividerX) / 2;
+        const statusIconCy = amountPanelY + 26;
+
+        doc.setFillColor(...statusColor);
+        doc.circle(statusCx, statusIconCy, 11, "F");
+        doc.setDrawColor(255, 255, 255);
+        doc.setLineWidth(1.6);
+        doc.line(statusCx - 5, statusIconCy, statusCx - 1.5, statusIconCy + 4.5);
+        doc.line(statusCx - 1.5, statusIconCy + 4.5, statusCx + 5.5, statusIconCy - 5);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(...GRAY);
+        doc.text("STATUS", statusCx, amountPanelY + 50, { align: "center" });
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(...statusColor);
+        doc.text(statusValue.toUpperCase(), statusCx, amountPanelY + 64, {
+          align: "center",
+        });
+
+        // ── Detail rows (zebra-tinted) ──
+        const detailRows: [string, string][] = [
           ["Transaction No.", txnCode],
           ["Date", formattedDate],
           ["Member", String(row.Client ?? row.ClientName ?? "-")],
           ["Package", String(row.PackageName ?? "-")],
         ];
 
-        let rowY = cardTop + 130;
-        const rowHeight = 34;
-        doc.setFontSize(10);
+        let rowTop = detailRowsTop;
+        doc.setFontSize(9.5);
 
-        rows.forEach(([label, value], idx) => {
-          if (idx % 2 === 1) {
-            doc.setFillColor(250, 250, 252);
-            doc.rect(marginX + 1, rowY - 20, contentWidth - 2, rowHeight, "F");
+        detailRows.forEach(([label, value], idx) => {
+          const baseline = rowTop + rowHeight / 2 + 3;
+
+          if (idx % 2 === 0) {
+            doc.setFillColor(...ROW_TINT);
+            doc.rect(marginX + 1, rowTop, contentWidth - 2, rowHeight, "F");
           }
-          doc.setTextColor(120, 120, 120);
+
+          doc.setFillColor(...NAVY);
+          doc.circle(marginX + 22, baseline - 3, 2.2, "F");
+
           doc.setFont("helvetica", "normal");
-          doc.text(label, marginX + 20, rowY);
-          doc.setTextColor(33, 37, 61);
+          doc.setTextColor(...GRAY);
+          doc.text(label, marginX + 32, baseline);
+
           doc.setFont("helvetica", "bold");
-          doc.text(value, pageWidth - marginX - 20, rowY, { align: "right" });
-          rowY += rowHeight;
+          doc.setTextColor(...NAVY);
+          doc.text(value, pageWidth - marginX - 16, baseline, { align: "right" });
+
+          doc.setDrawColor(232, 234, 238);
+          doc.setLineWidth(0.6);
+          doc.line(
+            marginX + 16,
+            rowTop + rowHeight,
+            pageWidth - marginX - 16,
+            rowTop + rowHeight,
+          );
+
+          rowTop += rowHeight;
         });
 
-        // ── Footer ──
-        doc.setDrawColor(230, 230, 230);
-        doc.line(marginX, cardBottom + 30, pageWidth - marginX, cardBottom + 30);
-        doc.setFontSize(8.5);
-        doc.setTextColor(150, 150, 150);
-        doc.setFont("helvetica", "normal");
-        doc.text(
-          "This is a system-generated receipt and does not require a signature.",
-          marginX,
-          cardBottom + 48,
+        // ── Highlights banner + strip ──
+        doc.setFillColor(...NAVY);
+        doc.roundedRect(
+          pageWidth / 2 - 90,
+          bannerY,
+          180,
+          bannerH,
+          12,
+          12,
+          "F",
         );
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(255, 255, 255);
+        doc.text("RECEIPT HIGHLIGHTS", pageWidth / 2, bannerY + bannerH / 2 + 3.5, {
+          align: "center",
+        });
+
+        const highlights: {
+          title: string;
+          desc: string;
+          color: [number, number, number];
+          icon: "lock" | "bolt" | "check" | "document" | "clock";
+        }[] = [
+          { title: "Secure Payment", desc: "Encrypted & protected", color: [199, 90, 90], icon: "lock" },
+          { title: "Instant Processing", desc: "Confirmed immediately", color: [199, 150, 60], icon: "bolt" },
+          { title: "Verified Member", desc: "Linked to your account", color: [70, 150, 110], icon: "check" },
+          { title: "Digital Record", desc: "Saved to your history", color: [70, 110, 190], icon: "document" },
+          { title: "24/7 Support", desc: "Always here to help", color: [140, 90, 190], icon: "clock" },
+        ];
+
+        const tileW = contentWidth / highlights.length;
+
+        highlights.forEach((h, i) => {
+          const cx = marginX + tileW * i + tileW / 2;
+
+          // soft shadow beneath the badge, then a ringed colored circle
+          doc.setFillColor(...SHADOW);
+          doc.circle(cx, tilesY + 1.5, 13, "F");
+          doc.setFillColor(...h.color);
+          doc.circle(cx, tilesY, 13, "F");
+          doc.setDrawColor(255, 255, 255);
+          doc.setLineWidth(1.2);
+          doc.circle(cx, tilesY, 13, "S");
+
+          drawDuotoneIcon(doc, h.icon, cx, tilesY);
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(7.5);
+          doc.setTextColor(...NAVY);
+          doc.text(h.title, cx, tilesY + 24, { align: "center" });
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(6.5);
+          doc.setTextColor(...GRAY);
+          const descLines = doc.splitTextToSize(h.desc, tileW - 12);
+          doc.text(descLines, cx, tilesY + 34, { align: "center" });
+        });
+
+        // ── Thank-you note ──
+        doc.setDrawColor(228, 230, 235);
+        doc.setLineWidth(0.7);
+        doc.line(marginX + 16, tilesBottom, pageWidth - marginX - 16, tilesBottom);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...NAVY);
+        doc.text("Thank you for your generous contribution.", pageWidth / 2, tilesBottom + 20, {
+          align: "center",
+        });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(...GRAY);
+        doc.text(
+          "Your support makes a lasting difference.",
+          pageWidth / 2,
+          tilesBottom + 32,
+          { align: "center" },
+        );
+
+        // ── Outer card border: navy edge + inset pale-gold frame + corner studs ──
+        doc.setDrawColor(210, 213, 222);
+        doc.setLineWidth(1);
+        doc.roundedRect(marginX, cardTop, contentWidth, cardBottom - cardTop, cardRadius, cardRadius);
+
+        doc.setDrawColor(...GOLD_PALE);
+        doc.setLineWidth(0.7);
+        doc.roundedRect(
+          marginX + 5,
+          cardTop + 5,
+          contentWidth - 10,
+          cardBottom - cardTop - 10,
+          cardRadius - 3,
+          cardRadius - 3,
+        );
+
+        doc.setFillColor(...GOLD);
+        [
+          [marginX + 5, cardTop + 5],
+          [marginX + contentWidth - 5, cardTop + 5],
+          [marginX + 5, cardBottom - 5],
+          [marginX + contentWidth - 5, cardBottom - 5],
+        ].forEach(([cx, cy]) => doc.circle(cx, cy, 1.6, "F"));
+
+        // ── Bottom disclaimer bar — pinned to the page's bottom edge,
+        //    with a gold rule + flourish and the "Generated on" line above it ──
+        const barH = 26;
+        const barY = pageHeight - barH;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.setTextColor(140, 140, 140);
         doc.text(
           `Generated on ${format(new Date(), "dd MMM yyyy, hh:mm a")}`,
-          marginX,
-          cardBottom + 62,
+          pageWidth / 2,
+          barY - 14,
+          { align: "center" },
+        );
+
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(1);
+        doc.line(marginX, barY - 28, pageWidth / 2 - 6, barY - 28);
+        doc.line(pageWidth / 2 + 6, barY - 28, pageWidth - marginX, barY - 28);
+        doc.setFillColor(...GOLD);
+        doc.circle(pageWidth / 2, barY - 28, 2.4, "F");
+
+        doc.setFillColor(...NAVY);
+        doc.rect(0, barY, pageWidth, barH, "F");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(255, 255, 255);
+        doc.text(
+          "This is a system-generated receipt and does not require a signature.",
+          pageWidth / 2,
+          barY + barH / 2 + 3,
+          { align: "center" },
         );
 
         doc.save(`Receipt_${txnCode}.pdf`);
