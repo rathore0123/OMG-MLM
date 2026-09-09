@@ -108,20 +108,36 @@ All stored procedures use the `USP_` prefix.
 
 ---
 
-## Remote Backend & Database (SSH reference)
+## Remote Backend & Database
 
-The backend runs on a Windows RDP server, reached via two global MCP servers
-(configured once in `~/.claude.json`, available in every project — no per-project
-setup needed):
+Two real servers back this project — a live/production IIS box and a shared
+dev box (used by several client projects, OMG included). Credentials are kept
+out of git, in gitignored reference files at the repo root:
+- `ServerCredentail/.env` — production server (SSH + DB)
+- `DevelopmentServer-Credential/.env` — dev server (SSH + DB)
 
-| Tool prefix | Purpose |
-|---|---|
-| `mcp__ssh__*` | SSH into `122.160.25.202` — file ops, remote exec, AND all SQL tools |
-| `mcp__mssql__*` | Same SQL tools via a local TCP proxy into ssh-mcp (no second SSH connection) |
+Dedicated global MCP servers (configured once in `~/.claude.json`, available in
+every project) connect to each, using copies of the same `ssh-mcp`/`mssql-mcp`
+scripts other projects on this machine use:
 
-Both prefixes expose identical SQL tools; prefer `mcp__mssql__*` for SQL work.
+| Tool prefix | Server | Host | Purpose |
+|---|---|---|---|
+| `mcp__ssh-omg-prod__*` | Production (`omginternational.live`) | `82.180.144.51` | File ops, remote exec, SQL tools |
+| `mcp__mssql-omg-prod__*` | Production | via ssh-omg-prod broker (port `14339`) | SQL tools, no second SSH connection |
+| `mcp__ssh-omg-dev__*` | Dev (shared box, `C:\Projects\OMG\`) | `163.128.208.196` | File ops, remote exec — **no OMG database exists on this box yet** (see below) |
+| `mcp__mssql-omg-dev__*` | Dev | via ssh-omg-dev broker (port `14340`) | Configured for when an OMG dev DB exists |
 
-### SQL Tools (both prefixes)
+Prefer `mcp__mssql-omg-prod__*` for SQL work; both `ssh-omg-prod` and
+`mssql-omg-prod` expose identical SQL tools.
+
+> **The dev SQL Server has no `OMG` database.** `sys.databases` on
+> `163.128.208.196` only has `AINet`, `BitMartsAyurveda`, `Funderax`, `LoanAPP`,
+> `SunValley`, `TellMe` — no OMG. File/code access to `C:\Projects\OMG\` works
+> fine via `mcp__ssh-omg-dev__*`; SQL tools via `mcp__mssql-omg-dev__*` will
+> fail until an OMG database is created/restored there. All DB work happens
+> against **production** for now.
+
+### SQL Tools (both mssql/ssh prefixes)
 
 | Tool | Purpose |
 |---|---|
@@ -136,51 +152,57 @@ Both prefixes expose identical SQL tools; prefer `mcp__mssql__*` for SQL work.
 ### Connection Architecture
 
 ```
-mcp__ssh__*   → ssh-mcp   → SSH exec → 122.160.25.202 runs PowerShell/ADO.NET → SQL Server 192.168.1.53:9989
-mcp__mssql__* → mssql-mcp → TCP localhost:14332 → ssh-mcp (reuses the same SSH connection)
+mcp__ssh-omg-prod__*   → ssh-mcp-omg-prod   → SSH exec → 82.180.144.51 runs PowerShell/ADO.NET → local SQL Server
+mcp__mssql-omg-prod__* → mssql-mcp-omg-prod → TCP 127.0.0.1:14339 → ssh-mcp-omg-prod (reuses the same SSH connection)
+
+mcp__ssh-omg-dev__*    → ssh-mcp-omg-dev    → SSH exec → 163.128.208.196 runs PowerShell/ADO.NET → local SQL Server
+mcp__mssql-omg-dev__*  → mssql-mcp-omg-dev  → TCP 127.0.0.1:14340 → ssh-mcp-omg-dev (reuses the same SSH connection)
 ```
 
-This is **not** a port-forward/tunnel to the DB port. `192.168.1.53:9989` is only
-reachable from inside the RDP server's LAN, so `ssh-mcp` (`~/.claude/ssh-mcp/index.js`,
-using the `ssh2` npm client) keeps one persistent SSH connection open to
-`122.160.25.202` and, for every SQL call, base64/UTF-16LE-encodes a small
-PowerShell script (`-EncodedCommand`, to dodge shell-quoting) that:
-1. opens a `System.Data.SqlClient.SqlConnection` to `192.168.1.53:9989` **from
-   the remote server itself**,
-2. runs the query via `SqlDataAdapter`/`ExecuteNonQuery`,
-3. serializes rows to JSON (`ConvertTo-Json`) and prints them,
+Same mechanism on both: `ssh-mcp-omg-*` (`~/.claude/ssh-mcp-omg-{prod,dev}/index.js`,
+using the `ssh2` npm client) keeps one persistent SSH connection open and, for
+every SQL call, base64/UTF-16LE-encodes a small PowerShell script
+(`-EncodedCommand`, to dodge shell-quoting) that opens a
+`System.Data.SqlClient.SqlConnection` **from the remote server itself**, runs
+the query via `SqlDataAdapter`/`ExecuteNonQuery`, and serializes rows to JSON.
+A local TCP broker (`127.0.0.1:14339` prod / `14340` dev) lets `mssql-mcp-omg-*`
+submit `{action, sql}` requests through the same SSH session without opening a
+second one.
 
-then runs that script over the SSH exec channel (`conn.exec`) and captures stdout.
-A local TCP broker on `127.0.0.1:14332` lets `mssql-mcp` submit `{action, sql}`
-requests through this same SSH session without opening a second one.
+The database actually queried is whatever `ssh-mcp-omg-*` currently has loaded
+from its own `db.config.json` (re-read on every call, not cached) — see below.
 
-`mssql-mcp`'s own env vars in `~/.claude.json` (`MSSQL_HOST=localhost`, etc.) are
-vestigial — `mssql-mcp/index.js` ignores them and always proxies to
-`127.0.0.1:14332`. The database actually queried is whatever `ssh-mcp` currently
-has loaded from `db.config.json` below (it re-reads that file, not the env vars,
-on every call — `getDbCfg()`).
+### Switching DB / Project — READ THIS FIRST
 
-### Switching DB / Project
+`ssh-mcp-omg-prod` and `ssh-mcp-omg-dev` are **dedicated, OMG-only** copies —
+their `db.config.json` should always say `"database": "OMG"` and there's no
+reason to change it for this project:
+- `C:\Users\Harsh Prajapati\.claude\ssh-mcp-omg-prod\db.config.json`
+- `C:\Users\Harsh Prajapati\.claude\ssh-mcp-omg-dev\db.config.json`
 
-Edit `C:\Users\Harsh Prajapati\.claude\mssql-mcp\db.config.json` — ssh-mcp rereads
-it on every SQL call, no restart needed:
+**However**, both physical servers also host other client projects (AINet,
+Funderax, TellMe, SunValley, ...), reached through their own *separate* global
+MCP registrations (`ssh-prod`/`mssql-prod`/`ssh-dev2`/`mssql-dev2`, still
+configured in `~/.claude.json`, pointed at the exact same two hosts). Those
+were the original tools before the OMG-dedicated copies existed, and their own
+`db.config.json` files (under `ssh-mcp-ainet-prod`/`ssh-mcp-ainet-dev2`) get
+switched between projects by whoever is using them — **do not use the
+`ssh-prod`/`mssql-prod`/`ssh-dev2`/`mssql-dev2` prefixes for OMG work**, they
+are shared with AINet and will silently return the wrong project's data
+whenever AINet work last left them pointed at `AINet`/`Ainet`. Use the
+`-omg-` prefixed tools instead — they're isolated copies with their own ports
+and their own `db.config.json`, so no other project's session can repoint them.
 
-```json
-{ "host": "192.168.1.53", "port": 9989, "database": "omg", "user": "sa", "password": "..." }
-```
+If `SELECT DB_NAME()` via `mcp__mssql-omg-prod__execute_query` ever returns
+anything other than `OMG`, something edited that dedicated config by mistake —
+fix `ssh-mcp-omg-prod\db.config.json`'s `"database"` field back to `"OMG"`.
 
-> As of this writing, `db.config.json` is pointed at a **different** project's
-> database (`ZENTORACAPITAL`). Before running any SQL tool for OMG MLM work,
-> switch `"database"` to `"omg"` (same DB the original `OMG_MLM` project used),
-> or you'll be querying the wrong project's data.
+Key server paths:
+- Production site root (`mcp__ssh-omg-prod__*`): `C:\inetpub\vhosts\omginternational.live\httpdocs\` — contains `Admin\`, `MEMBER\`, `MainAPI\` directly (deploy target, not a separate `ReactBuilds\` staging dir)
+- Dev project root (`mcp__ssh-omg-dev__*`): `C:\Projects\OMG\` — same `Admin\`, `MEMBER\`, `MainAPI\` layout
 
-Key server paths (on the RDP server, via `mcp__ssh__*`):
-- API project: `C:\Projects\TestApi\` (.NET Core Web API, uses EF Core + stored procs)
-- API config: `C:\Projects\TestApi\appsettings.json` (connection string)
-- React build output: `C:\ReactBuilds\`
-
-Use `mcp__mssql__get_stored_procedure` / `mcp__mssql__execute_command` to inspect
-or modify stored procedures directly on the server.
+Use `mcp__mssql-omg-prod__get_stored_procedure` / `mcp__mssql-omg-prod__execute_command`
+to inspect or modify stored procedures directly on the server.
 
 ---
 
@@ -189,8 +211,12 @@ or modify stored procedures directly on the server.
 1. `base` in each panel's `vite.config.ts` is already set for this project:
    AdminPanel → `/admin`, MemberPanel → `/member`
 2. Run `npm run build` — outputs to `dist/`
-3. Upload `dist/` to `C:\ReactBuilds\` on the RDP server via `mcp__ssh__write_file`
-   or `mcp__ssh__execute_remote`
+3. Upload `dist/` to the production site root via `mcp__ssh-omg-prod__write_file` /
+   `mcp__ssh-omg-prod__execute_remote`. The live site
+   (`C:\inetpub\vhosts\omginternational.live\httpdocs\`) has `Admin\` and
+   `MEMBER\` folders directly under it, matching the panels' base paths —
+   confirm the exact target subfolder against what's already deployed there
+   before overwriting anything.
 
 ---
 

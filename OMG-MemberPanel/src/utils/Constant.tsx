@@ -180,6 +180,7 @@ export const RewardTitle = "Reward";
 export const SearchTableButton = "Search";
 export const ServerSideProcessingHeading = "Reward";
 export const LifeRewardTitle = "Salary Qualification Chart";
+export const RankRewardTitle = "Rank Reward Report";
 export const UsdtTRCTitle = "Request USDT(TRC20)";
 export const UsdtBEPTitle = "USDT(BEP20) Request";
 export const LastTransactionHeading = "Recent Transaction List";

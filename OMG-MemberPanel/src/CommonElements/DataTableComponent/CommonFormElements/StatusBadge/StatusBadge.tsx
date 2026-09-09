@@ -13,6 +13,14 @@ const statusStyles = {
     background: "#008000",
     color: "#fff",
   },
+  Achieved: {
+    background: "#008000",
+    color: "#fff",
+  },
+  Unachieved: {
+    background: "#e5e7eb",
+    color: "#555",
+  },
   New: {
     background: "#008000",
     color: "#fff",

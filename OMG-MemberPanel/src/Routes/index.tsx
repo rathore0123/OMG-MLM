@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Login from "../Component/Authentication/Login";
 import BrowserAuth from "../Component/Authentication/BrowserAuth";
 import ForgotPassword from "../Component/Authentication/ForgotPassword";
@@ -9,10 +10,22 @@ import PrivateRoute from "./PrivateRoute";
 import  authRoutes  from "./AuthRoutes";
 import ConnectionStatusChecker from './../CheckConnection';
 import RegistrationSuccess from "../Component/Authentication/RegistrationSucces/RegistrationSuccess";
+
+/* React Router doesn't reset scroll on navigation by default — without this,
+   a new page opens still scrolled to wherever the previous page was left. */
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const RouterData = () => {
   const login = localStorage.getItem("clientId");
   return (
     <BrowserRouter>
+     <ScrollToTop />
      <ConnectionStatusChecker />
       <Routes>
         {login ? (

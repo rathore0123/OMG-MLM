@@ -12,6 +12,7 @@ import AccountSettingPage from "../Pages/AccountSettings/AccountSettings";
 import ActivateBotPage from "../Pages/ActivateBot/ActivateBot";
 import BonanzaPage from "../Pages/Reward/Bonanza";
 import LifeTimeRewardPage from "../Pages/Reward/LifeTimeReward";
+import RankRewardReportPage from "../Pages/Reward/RankRewardReport";
 
 import USSDTTRC20Page from "../Pages/DepositFund/USDTTRC20";
 import USSDTBEP20Page from "../Pages/DepositFund/USDTBEP20";
@@ -130,6 +131,10 @@ const routes = [
   {
     path: `${import.meta.env.BASE_URL}/LifeTimeReward`,
     Component: <LifeTimeRewardPage />,
+  },
+  {
+    path: `${import.meta.env.BASE_URL}/rankrewardreport`,
+    Component: <RankRewardReportPage />,
   },
   { path: `${import.meta.env.BASE_URL}/trc20`, Component: <USSDTTRC20Page /> },
   {

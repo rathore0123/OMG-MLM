@@ -1,0 +1,10 @@
+# Server credentials — plaintext SSH/DB passwords, never commit
+ServerCredentail/
+DevelopmentServer-Credential/
+.env
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
